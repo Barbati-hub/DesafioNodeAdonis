@@ -1,0 +1,92 @@
+@layout('layouts/app')
+
+@section('title')
+  📊 Dashboard
+@endsection
+
+@section('content')
+  <div class="space-y-8">
+    <!-- Cards de Métricas -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Card: Produtos -->
+      <div class="bg-white p-6 rounded-lg shadow-lg flex items-center justify-between transform hover:scale-105 transition duration-300">
+        <div>
+          <h3 class="text-gray-700 text-lg font-semibold">Produtos</h3>
+          <p class="text-3xl font-bold text-gray-900 mt-2">120</p>
+        </div>
+        <div class="text-blue-500">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V3a1 1 0 00-1-1H9a1 1 0 00-1 1v8M5 11h14l-1.68 7.33a2 2 0 01-1.96 1.67H8.64a2 2 0 01-1.96-1.67L5 11z" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Card: Pedidos -->
+      <div class="bg-white p-6 rounded-lg shadow-lg flex items-center justify-between transform hover:scale-105 transition duration-300">
+        <div>
+          <h3 class="text-gray-700 text-lg font-semibold">Pedidos</h3>
+          <p class="text-3xl font-bold text-gray-900 mt-2">85</p>
+        </div>
+        <div class="text-green-500">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6a3 3 0 016 0v6m-6 0h6" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Card: Mesas Ativas -->
+      <div class="bg-white p-6 rounded-lg shadow-lg flex items-center justify-between transform hover:scale-105 transition duration-300">
+        <div>
+          <h3 class="text-gray-700 text-lg font-semibold">Mesas Ativas</h3>
+          <p class="text-3xl font-bold text-gray-900 mt-2">15</p>
+        </div>
+        <div class="text-purple-500">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 7v13h18V7M3 7l9 6 9-6" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabela de Produtos -->
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+      <h2 class="text-xl font-semibold text-gray-700 mb-4">Exemplo de Produtos</h2>
+      <table class="w-full text-left">
+        <thead>
+          <tr class="bg-gray-200 text-gray-700">
+            <th class="p-3">ID</th>
+            <th class="p-3">Produto</th>
+            <th class="p-3">Categoria</th>
+            <th class="p-3">Preço</th>
+            <th class="p-3">Estoque</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b hover:bg-gray-100">
+            <td class="p-3">1</td>
+            <td class="p-3">Camiseta Básica</td>
+            <td class="p-3">Vestuário</td>
+            <td class="p-3">R$ 49,90</td>
+            <td class="p-3">150</td>
+          </tr>
+          <tr class="border-b hover:bg-gray-100">
+            <td class="p-3">2</td>
+            <td class="p-3">Calça Jeans</td>
+            <td class="p-3">Vestuário</td>
+            <td class="p-3">R$ 89,90</td>
+            <td class="p-3">80</td>
+          </tr>
+          <tr class="hover:bg-gray-100">
+            <td class="p-3">3</td>
+            <td class="p-3">Tênis Esportivo</td>
+            <td class="p-3">Calçados</td>
+            <td class="p-3">R$ 129,90</td>
+            <td class="p-3">50</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+  </div>
+@endsection

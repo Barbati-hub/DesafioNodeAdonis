@@ -1,0 +1,134 @@
+@layout('layouts/app')
+
+@section('title')
+  📊 Relatórios - Dashboard
+@endsection
+
+@section('header_title')
+  📊 Relatórios
+@endsection
+
+@section('content')
+  <div class="space-y-8">
+    <!-- Introdução -->
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+      <h2 class="text-xl font-semibold text-gray-700">Relatórios</h2>
+      <p class="text-gray-600 mt-2">Visualize relatórios detalhados de vendas, usuários e pedidos.</p>
+    </div>
+
+    <!-- Cards de Relatórios -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <!-- Relatório de Vendas: Bar Chart -->
+      <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
+        <h3 class="text-xl font-bold text-gray-800">Relatório de Vendas</h3>
+        <p class="mt-2 text-gray-600">Vendas mensais em números.</p>
+        <div class="mt-4 h-48">
+          <canvas id="salesChart" class="bg-gray-100 rounded-lg"></canvas>
+        </div>
+      </div>
+
+      <!-- Relatório de Usuários: Doughnut Chart -->
+      <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
+        <h3 class="text-xl font-bold text-gray-800">Relatório de Usuários</h3>
+        <p class="mt-2 text-gray-600">Distribuição de usuários ativos, inativos e pendentes.</p>
+        <div class="mt-4 h-48">
+          <canvas id="usersChart" class="bg-gray-100 rounded-lg"></canvas>
+        </div>
+      </div>
+
+      <!-- Relatório de Pedidos: Line Chart -->
+      <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
+        <h3 class="text-xl font-bold text-gray-800">Relatório de Pedidos</h3>
+        <p class="mt-2 text-gray-600">Pedidos realizados ao longo do tempo.</p>
+        <div class="mt-4 h-48">
+          <canvas id="ordersChart" class="bg-gray-100 rounded-lg"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inclusão do Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Relatório de Vendas - Gráfico de Barras
+      const salesCtx = document.getElementById('salesChart').getContext('2d');
+      new Chart(salesCtx, {
+        type: 'bar',
+        data: {
+          labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+          datasets: [{
+            label: 'Vendas',
+            data: [50, 70, 40, 85, 60, 90, 75, 100, 80, 65, 95, 110],
+            backgroundColor: 'rgba(54, 162, 235, 0.6)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+
+      // Relatório de Usuários - Gráfico Doughnut
+      const usersCtx = document.getElementById('usersChart').getContext('2d');
+      new Chart(usersCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Ativos', 'Inativos', 'Pendentes'],
+          datasets: [{
+            label: 'Usuários',
+            data: [300, 50, 30],
+            backgroundColor: [
+              'rgba(75, 192, 192, 0.6)',
+              'rgba(255, 99, 132, 0.6)',
+              'rgba(255, 205, 86, 0.6)'
+            ],
+            borderColor: [
+              'rgba(75, 192, 192, 1)',
+              'rgba(255, 99, 132, 1)',
+              'rgba(255, 205, 86, 1)'
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false
+        }
+      });
+
+      // Relatório de Pedidos - Gráfico de Linhas
+      const ordersCtx = document.getElementById('ordersChart').getContext('2d');
+      new Chart(ordersCtx, {
+        type: 'line',
+        data: {
+          labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
+          datasets: [{
+            label: 'Pedidos',
+            data: [20, 35, 25, 45],
+            borderColor: 'rgba(255, 159, 64, 1)',
+            backgroundColor: 'rgba(255, 159, 64, 0.2)',
+            fill: true,
+            tension: 0.3
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    });
+  </script>
+@endsection
