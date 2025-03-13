@@ -36,3 +36,12 @@
   }
 }
 
+nome
+whatsapp
+cep
+logradouro
+numero
+complemento
+bairro
+cidade
+estado
