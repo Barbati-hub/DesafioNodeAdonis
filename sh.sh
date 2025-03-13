@@ -25,7 +25,6 @@
   },
   "dependencies": {
     "@adonisjs/core": "^5.9.0",
-    "@adonisjs/lucid": "^21.6.1",
     "@adonisjs/repl": "^3.1.11",
     "@adonisjs/session": "^6.4.0",
     "@adonisjs/shield": "^7.1.1",
@@ -36,3 +35,4 @@
     "source-map-support": "^0.5.21"
   }
 }
+
