@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>@!section('title')Dashboard@!endsection</title>
+  <title>@yield('title', 'Dashboard')</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
 </head>
 <body class="bg-gray-100 flex min-h-screen">
@@ -14,13 +14,20 @@
       <a href="/home" class="block px-4 py-2 rounded-md hover:bg-blue-600 transition">🏠 Home</a>
       <a href="/relatorios" class="block px-4 py-2 rounded-md hover:bg-blue-600 transition">📊 Relatórios</a>
       <a href="/usuarios" class="block px-4 py-2 rounded-md hover:bg-blue-600 transition">👥 Usuários</a>
+      <a href="/produtos" class="block px-4 py-2 rounded-md hover:bg-blue-600 transition">📦 Produtos</a>
       <a href="/configuracoes" class="block px-4 py-2 rounded-md hover:bg-blue-600 transition">⚙️ Configurações</a>
     </nav>
   </aside>
 
   <!-- Conteúdo Principal -->
   <main class="flex-1 p-6">
-    @!section('content')
+    @section('content')
+    @endsection
   </main>
+
+  <!-- Scripts -->
+  @section('scripts')
+  @endsection
+
 </body>
 </html>

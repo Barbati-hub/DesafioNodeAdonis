@@ -45,3 +45,22 @@ complemento
 bairro
 cidade
 estado
+
+regex
+
+# configurar migration
+node ace configure @adonisjs/lucid
+
+
+Variables for the PostgreSQL driver
+PG_HOST: Env.schema.string({ format: 'host' }),
+PG_PORT: Env.schema.number(),
+PG_USER: Env.schema.string(),
+PG_PASSWORD: Env.schema.string.optional(),
+PG_DB_NAME: Env.schema.string(),
+
+
+
+Cria o controller de forma automatica
+node ace make:controller ProdutoController
+node ace make:model Produto
