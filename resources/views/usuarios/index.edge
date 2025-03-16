@@ -1,0 +1,67 @@
+@layout('layouts/app')
+
+@section('title')
+👥 Gerenciamento de Usuários
+@endsection
+
+@section('content')
+<div class="bg-white p-6 shadow-lg rounded-lg">
+  <h2 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+    <i data-lucide="users"></i> Usuários Cadastrados
+  </h2>
+  <p class="text-gray-600 mt-2">Gerencie os usuários cadastrados no sistema.</p>
+
+  <!-- Botão para adicionar novo usuário -->
+  <div class="flex justify-end mt-4">
+    <a href="/usuarios/novo" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center gap-2 transition">
+      <i data-lucide="user-plus"></i> Adicionar Usuário
+    </a>
+  </div>
+
+  <!-- Lista de Usuários -->
+  <div class="mt-8 bg-white p-6 shadow-lg rounded-xl border border-gray-200">
+    <table class="w-full border-collapse bg-white rounded-lg shadow-md">
+      <thead>
+        <tr class="bg-gray-200 text-gray-700">
+          <th class="p-3 text-left border">ID</th>
+          <th class="p-3 text-left border">Nome</th>
+          <th class="p-3 text-left border">E-mail</th>
+          <th class="p-3 text-center border">Função</th>
+          <th class="p-3 text-center border">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if(usuarios && usuarios.length > 0)
+          @each(usuario in usuarios)
+            <tr id="usuario-{{ usuario.id }}" class="hover:bg-gray-100 transition">
+              <td class="border p-3 font-semibold">{{ usuario.id }}</td>
+              <td class="border p-3">{{ usuario.nome }}</td>
+              <td class="border p-3 text-gray-600">{{ usuario.email }}</td>
+              <td class="border p-3 text-center">
+                <span class="px-3 py-1 rounded-md text-white text-sm font-semibold"
+                  style="background-color: {{ usuario.role == 'admin' ? '#F87171' : '#60A5FA' }};">
+                  {{ usuario.role == 'admin' ? 'Administrador' : 'Usuário' }}
+                </span>
+              </td>
+              <td class="border p-3 flex justify-center space-x-2">
+                <a href="/usuarios/{{ usuario.id }}/editar" 
+                  class="bg-yellow-500 text-white px-3 py-1 rounded-md flex items-center gap-2 hover:bg-yellow-600 transition">
+                  <i data-lucide="edit"></i> Editar
+                </a>
+                <button onclick="deletarUsuario({{ usuario.id }})"
+                  class="bg-red-500 text-white px-3 py-1 rounded-md flex items-center gap-2 hover:bg-red-600 transition">
+                  <i data-lucide="trash-2"></i> Remover
+                </button>
+              </td>
+            </tr>
+          @endeach
+        @else
+          <tr>
+            <td colspan="5" class="text-center p-4 text-gray-500">Nenhum usuário cadastrado.</td>
+          </tr>
+        @endif
+      </tbody>
+    </table>
+  </div>
+</div>
+@endsection

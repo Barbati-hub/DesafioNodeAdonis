@@ -1,0 +1,92 @@
+@layout('layouts/app')
+
+@section('title')
+➕ Novo Usuário
+@endsection
+
+@section('content')
+<div class="bg-white p-6 shadow-lg rounded-lg max-w-lg mx-auto">
+  <h2 class="text-2xl font-semibold text-gray-800 flex items-center gap-2">
+    <i data-lucide="user-plus"></i> Adicionar Novo Usuário
+  </h2>
+  <p class="text-gray-600 mt-2">Preencha os campos abaixo para cadastrar um novo usuário.</p>
+
+  <form id="usuario-form" class="mt-4">
+    <div class="mb-4">
+      <label class="block text-gray-700 font-semibold">Nome</label>
+      <input type="text" id="nome" required 
+        class="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500">
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-gray-700 font-semibold">E-mail</label>
+      <input type="email" id="email" required 
+        class="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500">
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-gray-700 font-semibold">Senha</label>
+      <input type="password" id="senha" required 
+        class="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500">
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-gray-700 font-semibold">Função</label>
+      <select id="role" class="w-full p-3 border rounded-md focus:ring-2 focus:ring-blue-500">
+        <option value="usuario">Usuário</option>
+        <option value="admin">Administrador</option>
+      </select>
+    </div>
+
+    <button type="button" onclick="salvarUsuario()"
+      class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-300">
+      💾 Cadastrar Usuário
+    </button>
+  </form>
+
+  <!-- Área para mensagens de feedback -->
+  <div id="mensagem" class="mt-4 text-center hidden"></div>
+
+  <div class="mt-4 text-center">
+    <a href="/usuarios" class="text-blue-500 hover:underline flex items-center justify-center gap-2">
+      ⬅️ Voltar para a lista de usuários
+    </a>
+  </div>
+</div>
+@endsection
+
+@section('scripts')
+<script>
+  function salvarUsuario() {
+    const nome = document.getElementById("nome").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const senha = document.getElementById("senha").value.trim();
+    const role = document.getElementById("role").value;
+    const mensagem = document.getElementById("mensagem");
+
+    mensagem.classList.add("hidden"); // Oculta mensagens anteriores
+
+    if (!nome || !email || !senha) {
+      mensagem.textContent = "⚠️ Todos os campos são obrigatórios!";
+      mensagem.classList.add("text-red-500", "font-bold");
+      mensagem.classList.remove("hidden");
+      return;
+    }
+
+    // Simula um cadastro no frontend
+    setTimeout(() => {
+      mensagem.textContent = "✅ Usuário cadastrado com sucesso!";
+      mensagem.classList.remove("text-red-500");
+      mensagem.classList.add("text-green-600", "font-bold");
+      mensagem.classList.remove("hidden");
+
+      // Limpa os campos do formulário
+      document.getElementById("usuario-form").reset();
+    }, 1000);
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    lucide.createIcons(); // Ativa os ícones
+  });
+</script>
+@endsection

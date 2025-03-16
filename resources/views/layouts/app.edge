@@ -3,31 +3,47 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>@yield('title', 'Dashboard')</title>
+  <title>@!section('title', 'Dashboard')</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-gray-100 flex min-h-screen">
+  
   <!-- Sidebar -->
   <aside class="w-64 bg-blue-700 text-white p-5 flex flex-col">
-    <h2 class="text-lg font-semibold mb-5">Dashboard</h2>
+    <h2 class="text-lg font-semibold mb-5 flex items-center gap-2">
+      <i data-lucide="layout-dashboard"></i> Dashboard
+    </h2>
     <nav class="space-y-2">
-      <a href="/home" class="block px-4 py-2 rounded-md hover:bg-blue-600 transition">🏠 Home</a>
-      <a href="/relatorios" class="block px-4 py-2 rounded-md hover:bg-blue-600 transition">📊 Relatórios</a>
-      <a href="/usuarios" class="block px-4 py-2 rounded-md hover:bg-blue-600 transition">👥 Usuários</a>
-      <a href="/produtos" class="block px-4 py-2 rounded-md hover:bg-blue-600 transition">📦 Produtos</a>
-      <a href="/configuracoes" class="block px-4 py-2 rounded-md hover:bg-blue-600 transition">⚙️ Configurações</a>
+      <a href="/home" class="flex items-center px-4 py-2 rounded-md hover:bg-blue-600 transition">
+        <i data-lucide="home"></i> Home
+      </a>
+      <a href="/relatorios" class="flex items-center px-4 py-2 rounded-md hover:bg-blue-600 transition">
+        <i data-lucide="bar-chart-3"></i> Relatórios
+      </a>
+      <a href="/usuarios" class="flex items-center px-4 py-2 rounded-md hover:bg-blue-600 transition">
+        <i data-lucide="users"></i> Usuários
+      </a>
+      <a href="/produtos" class="flex items-center px-4 py-2 rounded-md hover:bg-blue-600 transition">
+        <i data-lucide="package"></i> Produtos
+      </a>
+      <a href="/configuracoes" class="flex items-center px-4 py-2 rounded-md hover:bg-blue-600 transition">
+        <i data-lucide="settings"></i> Configurações
+      </a>
     </nav>
   </aside>
 
   <!-- Conteúdo Principal -->
   <main class="flex-1 p-6">
-    @section('content')
-    @endsection
+    @!section('content')
   </main>
 
   <!-- Scripts -->
-  @section('scripts')
-  @endsection
+  @!section('scripts')
 
+  <script>
+    lucide.createIcons(); // Ativa os ícones Lucide
+  </script>
 </body>
 </html>

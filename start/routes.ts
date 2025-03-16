@@ -7,7 +7,7 @@ Route.get('/', async ({ view }) => {
 
 // Outras Páginas
 Route.get('/home', async ({ view }) => view.render('home'))
-Route.get('/usuarios', async ({ view }) => view.render('usuarios'))
+Route.get('/usuarios', async ({ view }) => view.render('usuarios/index')) 
 Route.get('/relatorios', async ({ view }) => view.render('relatorios'))
 Route.get('/configuracoes', async ({ view }) => view.render('configuracoes'))
 Route.get('/test', async ({ view }) => view.render('test'))
@@ -19,3 +19,6 @@ Route.post('/produtos', 'ProdutosController.store')
 Route.get('/produtos/:id/editar', 'ProdutosController.edit')
 Route.put('/produtos/:id', 'ProdutosController.update')
 Route.delete('/produtos/:id', 'ProdutosController.destroy')
+
+
+Route.get('/usuarios/novo', async ({ view }) => view.render('usuarios/novo'))

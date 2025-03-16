@@ -1,12 +1,14 @@
 @layout('layouts/app')
 
 @section('title')
-✏️ Editar Produto - {{ produto.nome ?? 'Produto Não Encontrado' }}
+✏️ Editar Produto - {{ produto?.nome ?? 'Produto Não Encontrado' }}
 @endsection
 
 @section('content')
 <div class="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-md">
-  <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">✏️ Editar Produto</h2>
+  <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+    <i data-lucide="edit-3"></i> Editar Produto
+  </h2>
   <p class="text-gray-600 mb-6">Altere os campos abaixo e salve as mudanças.</p>
 
   @if(produto)
@@ -39,16 +41,21 @@
     </button>
   </form>
 
-  <div id="mensagem" class="mt-4 text-center text-green-600 font-bold hidden"></div>
+  <!-- Mensagem de Feedback -->
+  <div id="mensagem" class="mt-4 text-center hidden"></div>
 
-  <div class="mt-4">
-    <a href="/produtos" class="text-blue-500 hover:underline">⬅️ Voltar para a lista de produtos</a>
+  <div class="mt-4 text-center">
+    <a href="/produtos" class="text-blue-500 hover:underline flex items-center justify-center gap-2">
+      ⬅️ Voltar para a lista de produtos
+    </a>
   </div>
 
   @else
   <p class="text-red-500 text-center font-bold">❌ Produto não encontrado.</p>
   <div class="text-center mt-4">
-    <a href="/produtos" class="text-blue-500 hover:underline">⬅️ Voltar para a lista de produtos</a>
+    <a href="/produtos" class="text-blue-500 hover:underline flex items-center justify-center gap-2">
+      ⬅️ Voltar para a lista de produtos
+    </a>
   </div>
   @endif
 
@@ -58,11 +65,21 @@
 @section('scripts')
 <script>
   async function atualizarProduto(id) {
-    const nome = document.getElementById("nome").value;
-    const descricao = document.getElementById("descricao").value;
-    const preco = document.getElementById("preco").value;
-    const quantidade = document.getElementById("quantidade").value;
-    
+    const nome = document.getElementById("nome").value.trim();
+    const descricao = document.getElementById("descricao").value.trim();
+    const preco = parseFloat(document.getElementById("preco").value);
+    const quantidade = parseInt(document.getElementById("quantidade").value);
+
+    const mensagem = document.getElementById("mensagem");
+    mensagem.classList.add("hidden"); // Esconde a mensagem antes de exibir um novo feedback
+
+    if (!nome || !descricao || isNaN(preco) || isNaN(quantidade)) {
+      mensagem.textContent = "⚠️ Todos os campos são obrigatórios!";
+      mensagem.classList.add("text-red-500");
+      mensagem.classList.remove("hidden");
+      return;
+    }
+
     try {
       const response = await fetch(`/produtos/${id}`, {
         method: "PUT",
@@ -73,20 +90,23 @@
       const result = await response.json();
 
       if (response.ok) {
-        document.getElementById("mensagem").textContent = "✅ Produto atualizado com sucesso!";
-        document.getElementById("mensagem").classList.remove("hidden");
+        mensagem.textContent = "✅ Produto atualizado com sucesso!";
+        mensagem.classList.remove("text-red-500");
+        mensagem.classList.add("text-green-600", "font-bold");
+        mensagem.classList.remove("hidden");
+
         setTimeout(() => {
-          window.location.href = "/produtos"; // Redireciona para a lista
+          window.location.href = "/produtos"; // Redireciona após 1.5 segundos
         }, 1500);
       } else {
-        document.getElementById("mensagem").textContent = "❌ Erro ao atualizar o produto.";
-        document.getElementById("mensagem").classList.add("text-red-500");
-        document.getElementById("mensagem").classList.remove("hidden");
+        mensagem.textContent = "❌ Erro ao atualizar o produto.";
+        mensagem.classList.add("text-red-500");
+        mensagem.classList.remove("hidden");
       }
     } catch (error) {
-      document.getElementById("mensagem").textContent = "❌ Erro ao conectar com o servidor.";
-      document.getElementById("mensagem").classList.add("text-red-500");
-      document.getElementById("mensagem").classList.remove("hidden");
+      mensagem.textContent = "❌ Erro ao conectar com o servidor.";
+      mensagem.classList.add("text-red-500");
+      mensagem.classList.remove("hidden");
     }
   }
 </script>

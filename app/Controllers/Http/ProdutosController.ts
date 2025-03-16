@@ -65,12 +65,23 @@ export default class ProdutosController {
   // Deletar produto
   public async destroy({ params, response }: HttpContextContract) {
     try {
-      const produto = await Produto.findOrFail(params.id);
+      console.log("🗑️ Tentando excluir o produto ID:", params.id);
+
+      const produto = await Produto.find(params.id);
+
+      if (!produto) {
+        console.error("❌ Produto não encontrado!");
+        return response.status(404).json({ error: "Produto não encontrado!" });
+      }
+
       await produto.delete();
+
+      console.log("✅ Produto excluído com sucesso!");
       return response.status(200).json({ message: "Produto deletado com sucesso!" });
+      
     } catch (error) {
       console.error("❌ Erro ao deletar produto:", error);
-      return response.status(500).json({ message: "Erro ao deletar o produto." });
+      return response.status(500).json({ error: "Erro ao deletar o produto.", details: error.message });
     }
   }
 }

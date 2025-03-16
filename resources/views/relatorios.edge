@@ -1,134 +1,98 @@
 @layout('layouts/app')
 
 @section('title')
-  📊 Relatórios - Dashboard
-@endsection
-
-@section('header_title')
-  📊 Relatórios
+📊 Relatórios
 @endsection
 
 @section('content')
-  <div class="space-y-8">
-    <!-- Introdução -->
-    <div class="bg-white p-6 rounded-lg shadow-lg">
-      <h2 class="text-xl font-semibold text-gray-700">Relatórios</h2>
-      <p class="text-gray-600 mt-2">Visualize relatórios detalhados de vendas, usuários e pedidos.</p>
+<div class="bg-white p-6 shadow-lg rounded-lg">
+  <h2 class="text-2xl font-bold text-gray-800 flex items-center gap-2">
+    <i data-lucide="bar-chart-3" class="animate-pulse"></i> Relatórios
+  </h2>
+  <p class="text-gray-600 mt-2">Acompanhe os dados de vendas e desempenho do seu negócio.</p>
+
+  <!-- Cards de Informações -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+
+    <!-- Receita Mensal -->
+    <div class="bg-blue-100 p-4 rounded-lg flex items-center gap-4 shadow-md transition hover:scale-105">
+      <i data-lucide="dollar-sign" class="text-blue-600 text-3xl animate-bounce"></i>
+      <div>
+        <p class="text-gray-700">Receita do mês</p>
+        <h3 class="text-xl font-bold text-blue-800">R$ 50.000,00</h3>
+      </div>
     </div>
 
-    <!-- Cards de Relatórios -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Relatório de Vendas: Bar Chart -->
-      <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
-        <h3 class="text-xl font-bold text-gray-800">Relatório de Vendas</h3>
-        <p class="mt-2 text-gray-600">Vendas mensais em números.</p>
-        <div class="mt-4 h-48">
-          <canvas id="salesChart" class="bg-gray-100 rounded-lg"></canvas>
-        </div>
+    <!-- Produtos Mais Vendidos -->
+    <div class="bg-green-100 p-4 rounded-lg flex items-center gap-4 shadow-md transition hover:scale-105">
+      <i data-lucide="shopping-cart" class="text-green-600 text-3xl animate-spin"></i>
+      <div>
+        <p class="text-gray-700">Mais vendidos</p>
+        <h3 class="text-lg font-bold text-green-800">Hambúrguer Clássico, Pizza de Calabresa</h3>
       </div>
+    </div>
 
-      <!-- Relatório de Usuários: Doughnut Chart -->
-      <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
-        <h3 class="text-xl font-bold text-gray-800">Relatório de Usuários</h3>
-        <p class="mt-2 text-gray-600">Distribuição de usuários ativos, inativos e pendentes.</p>
-        <div class="mt-4 h-48">
-          <canvas id="usersChart" class="bg-gray-100 rounded-lg"></canvas>
-        </div>
-      </div>
-
-      <!-- Relatório de Pedidos: Line Chart -->
-      <div class="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300">
-        <h3 class="text-xl font-bold text-gray-800">Relatório de Pedidos</h3>
-        <p class="mt-2 text-gray-600">Pedidos realizados ao longo do tempo.</p>
-        <div class="mt-4 h-48">
-          <canvas id="ordersChart" class="bg-gray-100 rounded-lg"></canvas>
-        </div>
+    <!-- Última Atualização -->
+    <div class="bg-yellow-100 p-4 rounded-lg flex items-center gap-4 shadow-md transition hover:scale-105">
+      <i data-lucide="clock" class="text-yellow-600 text-3xl animate-pulse"></i>
+      <div>
+        <p class="text-gray-700">Última atualização</p>
+        <h3 class="text-lg font-bold text-yellow-800">Hoje, às 14h</h3>
       </div>
     </div>
   </div>
 
-  <!-- Inclusão do Chart.js via CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      // Relatório de Vendas - Gráfico de Barras
-      const salesCtx = document.getElementById('salesChart').getContext('2d');
-      new Chart(salesCtx, {
-        type: 'bar',
-        data: {
-          labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
-          datasets: [{
-            label: 'Vendas',
-            data: [50, 70, 40, 85, 60, 90, 75, 100, 80, 65, 95, 110],
-            backgroundColor: 'rgba(54, 162, 235, 0.6)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: {
-              beginAtZero: true
-            }
+  <!-- Gráfico de Produtos Cadastrados -->
+  <div class="mt-10 bg-gray-50 p-6 rounded-lg shadow-lg">
+    <h3 class="text-lg font-semibold text-gray-700 flex items-center gap-2">
+      <i data-lucide="pie-chart" class="text-gray-700 text-2xl"></i> Distribuição de Produtos Cadastrados
+    </h3>
+    
+    <div class="flex justify-center">
+      <canvas id="graficoProdutos" class="mt-4 max-w-[400px] max-h-[400px]"></canvas>
+    </div>
+  </div>
+</div>
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", async () => {
+    lucide.createIcons(); // Ativa os ícones animados
+
+    // Dados dos produtos cadastrados (Exemplo: pode ser dinâmico do back-end)
+    const produtos = [
+      { nome: "Hambúrguer", quantidade: 120 },
+      { nome: "Pizza", quantidade: 90 },
+      { nome: "Batata Frita", quantidade: 75 },
+      { nome: "Refrigerante", quantidade: 150 },
+      { nome: "Milkshake", quantidade: 60 }
+    ];
+
+    // Configuração do gráfico
+    const ctx = document.getElementById("graficoProdutos").getContext("2d");
+    new Chart(ctx, {
+      type: "pie",
+      data: {
+        labels: produtos.map(p => p.nome),
+        datasets: [{
+          label: "Quantidade",
+          data: produtos.map(p => p.quantidade),
+          backgroundColor: ["#1D4ED8", "#22C55E", "#FACC15", "#EC4899", "#8B5CF6"],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: "bottom"
           }
         }
-      });
-
-      // Relatório de Usuários - Gráfico Doughnut
-      const usersCtx = document.getElementById('usersChart').getContext('2d');
-      new Chart(usersCtx, {
-        type: 'doughnut',
-        data: {
-          labels: ['Ativos', 'Inativos', 'Pendentes'],
-          datasets: [{
-            label: 'Usuários',
-            data: [300, 50, 30],
-            backgroundColor: [
-              'rgba(75, 192, 192, 0.6)',
-              'rgba(255, 99, 132, 0.6)',
-              'rgba(255, 205, 86, 0.6)'
-            ],
-            borderColor: [
-              'rgba(75, 192, 192, 1)',
-              'rgba(255, 99, 132, 1)',
-              'rgba(255, 205, 86, 1)'
-            ],
-            borderWidth: 1
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false
-        }
-      });
-
-      // Relatório de Pedidos - Gráfico de Linhas
-      const ordersCtx = document.getElementById('ordersChart').getContext('2d');
-      new Chart(ordersCtx, {
-        type: 'line',
-        data: {
-          labels: ['Semana 1', 'Semana 2', 'Semana 3', 'Semana 4'],
-          datasets: [{
-            label: 'Pedidos',
-            data: [20, 35, 25, 45],
-            borderColor: 'rgba(255, 159, 64, 1)',
-            backgroundColor: 'rgba(255, 159, 64, 0.2)',
-            fill: true,
-            tension: 0.3
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          scales: {
-            y: {
-              beginAtZero: true
-            }
-          }
-        }
-      });
+      }
     });
-  </script>
+  });
+</script>
 @endsection
