@@ -1,0 +1,92 @@
+@layout('layouts/auth')
+
+@section('title')
+🔑 Login
+@endsection
+
+@section('content')
+<div class="text-center mb-6">
+  <h2 class="text-3xl font-bold text-gray-800 flex items-center justify-center gap-2">
+    <i data-lucide="log-in"></i> Acesso ao Sistema
+  </h2>
+  <p class="text-gray-600 mt-2">Digite suas credenciais para continuar.</p>
+</div>
+
+<form id="login-form" class="space-y-5">
+  <div class="relative">
+    <label class="block text-gray-700 font-semibold mb-1 flex items-center gap-2">
+      <i data-lucide="mail"></i> E-mail
+    </label>
+    <input type="email" id="email" placeholder="Digite seu e-mail" required
+      class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition duration-300 shadow-sm">
+  </div>
+
+  <div class="relative">
+    <label class="block text-gray-700 font-semibold mb-1 flex items-center gap-2">
+      <i data-lucide="lock"></i> Senha
+    </label>
+    <input type="password" id="senha" placeholder="Digite sua senha" required
+      class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none transition duration-300 shadow-sm">
+  </div>
+
+  <button type="button" onclick="realizarLogin()"
+    class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition duration-300 shadow-md">
+    <i data-lucide="log-in"></i> Entrar
+  </button>
+</form>
+
+<div id="mensagem" class="mt-4 text-center hidden text-lg"></div>
+
+<div class="mt-6 text-center">
+  <a href="#" class="text-blue-500 hover:underline text-sm">Esqueceu a senha?</a>
+</div>
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    lucide.createIcons();
+    console.log("✅ Página carregada!");
+  });
+
+  async function realizarLogin() {
+    const email = document.getElementById("email").value.trim();
+    const senha = document.getElementById("senha").value.trim();
+    const mensagem = document.getElementById("mensagem");
+
+    mensagem.classList.add("hidden");
+
+    if (!email || !senha) {
+      mensagem.textContent = "⚠️ Preencha todos os campos!";
+      mensagem.classList.add("text-red-500", "font-bold");
+      mensagem.classList.remove("hidden");
+      return;
+    }
+
+    try {
+      console.log("🔵 Enviando requisição para /api/login...");
+      console.log("📧 Email:", email);
+      console.log("🔑 Senha:", senha);
+
+      const response = await axios.post("/api/login", { email, senha });
+
+      if (response.status === 200) {
+        mensagem.textContent = "✅ Login realizado com sucesso!";
+        mensagem.classList.add("text-green-600", "font-bold");
+        mensagem.classList.remove("hidden");
+
+        setTimeout(() => {
+          window.location.href = "/dashboard";
+        }, 1500);
+      }
+    } catch (error) {
+      console.error("❌ Erro na requisição:", error.response ? error.response.data : error);
+
+      mensagem.textContent = "❌ E-mail ou senha incorretos.";
+      mensagem.classList.add("text-red-500", "font-bold");
+      mensagem.classList.remove("hidden");
+    }
+  }
+</script>
+@endsection

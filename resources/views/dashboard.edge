@@ -5,6 +5,22 @@
 @endsection
 
 @section('content')
+  <!-- Header com usuário logado -->
+  <div class="flex items-center justify-between bg-white p-4 rounded-lg shadow-md mb-6">
+    <h1 class="text-2xl font-semibold text-gray-800 flex items-center gap-3">
+      <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+        <i data-lucide="user" class="w-6 h-6 text-gray-600"></i>
+      </div>
+      Bem-vindo, {{ usuario?.nome || 'Usuário' }}
+    </h1>
+    
+    <form action="/api/logout" method="POST">
+      <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition duration-300">
+        <i data-lucide="log-out"></i> Sair
+      </button>
+    </form>
+  </div>
+
   <div class="space-y-8">
     <!-- Cards de Métricas -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -14,11 +30,7 @@
           <h3 class="text-gray-700 text-lg font-semibold">Produtos</h3>
           <p class="text-3xl font-bold text-gray-900 mt-2">120</p>
         </div>
-        <div class="text-blue-500">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V3a1 1 0 00-1-1H9a1 1 0 00-1 1v8M5 11h14l-1.68 7.33a2 2 0 01-1.96 1.67H8.64a2 2 0 01-1.96-1.67L5 11z" />
-          </svg>
-        </div>
+        <i data-lucide="box" class="w-12 h-12 text-blue-500"></i>
       </div>
 
       <!-- Card: Pedidos -->
@@ -27,11 +39,7 @@
           <h3 class="text-gray-700 text-lg font-semibold">Pedidos</h3>
           <p class="text-3xl font-bold text-gray-900 mt-2">85</p>
         </div>
-        <div class="text-green-500">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-6a3 3 0 016 0v6m-6 0h6" />
-          </svg>
-        </div>
+        <i data-lucide="shopping-cart" class="w-12 h-12 text-green-500"></i>
       </div>
 
       <!-- Card: Mesas Ativas -->
@@ -40,11 +48,7 @@
           <h3 class="text-gray-700 text-lg font-semibold">Mesas Ativas</h3>
           <p class="text-3xl font-bold text-gray-900 mt-2">15</p>
         </div>
-        <div class="text-purple-500">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h18M3 7v13h18V7M3 7l9 6 9-6" />
-          </svg>
-        </div>
+        <i data-lucide="table" class="w-12 h-12 text-purple-500"></i>
       </div>
     </div>
 
@@ -86,7 +90,5 @@
         </tbody>
       </table>
     </div>
-
-
   </div>
 @endsection

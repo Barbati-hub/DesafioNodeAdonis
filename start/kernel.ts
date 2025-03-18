@@ -42,3 +42,6 @@ Server.middleware.register([
 */
 Server.middleware.registerNamed({
 })
+const providers = [
+  '@adonisjs/view/providers/ViewProvider', // Certifique-se de que esta linha está correta
+]
