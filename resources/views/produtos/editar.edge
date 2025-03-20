@@ -9,12 +9,12 @@
   <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
     <i data-lucide="package"></i> Editar Produto
   </h2>
-  <p class="text-gray-600 mb-6">Altere os campos abaixo e clique em **Salvar Alterações**.</p>
+  <p class="text-gray-600 mb-6">Altere os campos abaixo e clique em <strong>Salvar Alterações</strong>.</p>
 
   @if(produto)
-  <form action="/produtos/{{ produto.id }}" method="POST">
+  <form action="/produtos/{{ produto.id }}" method="POST" enctype="multipart/form-data">
     <!-- @csrf se estiver usando CSRF -->
-    <!-- Precisamos do método PUT no AdonisJS -->
+    <!-- Utilize @method('PUT') para enviar como PUT -->
     <!-- @method('PUT') -->
 
     <div class="mb-4">
@@ -49,6 +49,20 @@
         <input type="number" name="quantidade" value="{{ produto.quantidade }}"
           class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 shadow-sm transition">
       </div>
+    </div>
+
+    <!-- Exibe a imagem atual, se existir -->
+    @if(produto.imagemUrl)
+      <div class="mb-4">
+        <label class="block text-gray-700 font-semibold mb-1">Imagem Atual</label>
+        <img src="{{ produto.imagemUrl }}" alt="{{ produto.nome }}" class="w-32 h-auto rounded shadow" />
+      </div>
+    @endif
+
+    <!-- Campo para upload de nova imagem (opcional) -->
+    <div class="mb-4">
+      <label class="block text-gray-700 font-semibold mb-1">Nova Imagem (opcional)</label>
+      <input type="file" name="imagem" class="w-full border p-2 rounded" />
     </div>
 
     <button type="submit"

@@ -45,6 +45,7 @@ Route.get('/produtos/novo', 'ProdutosController.create')
 Route.post('/produtos', 'ProdutosController.store')
 Route.get('/produtos/:id', 'ProdutosController.show')
 Route.get('/produtos/:id/editar', 'ProdutosController.edit')
+
 Route.put('/produtos/:id', 'ProdutosController.update')
 Route.delete('/produtos/:id', 'ProdutosController.destroy')
 

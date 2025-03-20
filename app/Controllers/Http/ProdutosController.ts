@@ -1,5 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Produto from 'App/Models/Produto'
+import cloudinary from 'Config/cloudinary'
 
 export default class ProdutosController {
   // 1. Listar todos os produtos
@@ -17,22 +18,43 @@ export default class ProdutosController {
 
   // 3. Salvar novo produto
   public async store({ request, response }: HttpContextContract) {
+    // Recebe os dados do formulário
     const dados = request.only(['nome', 'descricao', 'preco', 'quantidade'])
+    
+    // Trata o upload do arquivo, se existir
+    const imagemFile = request.file('imagem', {
+      extnames: ['jpg', 'jpeg', 'png', 'gif'],
+      size: '2mb',
+    })
+
+    if (imagemFile) {
+      // Faz o upload para o Cloudinary
+      try {
+        const uploadResponse = await cloudinary.uploader.upload(imagemFile.tmpPath!, {
+          folder: 'produtos',
+        })
+        
+        // Armazena a URL retornada
+        dados['imagem_url'] = uploadResponse.secure_url
+      } catch (error) {
+        console.error('Erro no upload:', error)
+        return response.status(500).json({ error: 'Erro ao fazer upload da imagem.' })
+      }
+    }
+
     await Produto.create(dados)
     return response.redirect('/produtos')
   }
 
-  // 4. Exibir formulário de edição
-  public async edit({ params, view, response }: HttpContextContract) {
-    try {
-      const produto = await Produto.findOrFail(params.id)
-      // Renderiza 'resources/views/produtos/editar.edge'
-      return view.render('produtos/editar', { produto })
-    } catch (error) {
-      console.error('❌ Produto não encontrado:', error)
-      return response.redirect('/produtos')
-    }
+// Exibir formulário de edição
+public async edit({ params, view, response }: HttpContextContract) {
+  const produto = await Produto.find(params.id)
+  if (!produto) {
+    return response.redirect('/produtos')
   }
+  return view.render('produtos/editar', { produto })
+}
+
 
   // 5. Atualizar produto via AJAX ou via form
   public async update({ params, request, response }: HttpContextContract) {

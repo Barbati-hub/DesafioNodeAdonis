@@ -10,7 +10,8 @@ export default class Produtos extends BaseSchema {
       table.text('descricao').nullable()
       table.decimal('preco', 10, 2).notNullable()
       table.integer('quantidade').notNullable().defaultTo(0)
-
+      table.string('imagem_url').nullable() 
+      
       table.timestamp('created_at', { useTz: true }).defaultTo(this.now())
       table.timestamp('updated_at', { useTz: true }).defaultTo(this.now())
     })

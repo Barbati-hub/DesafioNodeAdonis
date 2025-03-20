@@ -1,4 +1,3 @@
-// import { DateTime } from 'luxon'
 import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
 
 export default class Produto extends BaseModel {
@@ -16,4 +15,8 @@ export default class Produto extends BaseModel {
 
   @column()
   public quantidade: number
+
+  // Mapeando a coluna 'imagem_url'
+  @column({ columnName: 'imagem_url' })
+  public imagemUrl?: string
 }
