@@ -1,0 +1,16 @@
+<!-- Modal de Detalhes do Produto (lado esquerdo, oculto por padrão) -->
+<div id="detailsModal" 
+     class="fixed top-0 left-0 h-full bg-white shadow-lg transform -translate-x-full 
+            transition-transform duration-300 z-40" 
+     style="width: calc(100% - 20rem);">
+  <div class="p-4 h-full overflow-auto">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold">Detalhes do Produto</h2>
+      <button id="closeDetails" class="text-gray-600 text-2xl">&times;</button>
+    </div>
+    <!-- Conteúdo dinâmico dos detalhes do produto -->
+    <div id="detailsContent">
+      <p>Carregando detalhes do produto...</p>
+    </div>
+  </div>
+</div>

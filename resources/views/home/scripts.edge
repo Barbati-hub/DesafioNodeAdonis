@@ -1,0 +1,66 @@
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Controle do Modal do Carrinho
+      const cartButton = document.getElementById('cartButton');
+      const cartModal = document.getElementById('cartModal');
+      const closeCart = document.getElementById('closeCart');
+  
+      if (cartButton && cartModal && closeCart) {
+        cartButton.addEventListener('click', () => {
+          cartModal.classList.remove('translate-x-full');
+        });
+        closeCart.addEventListener('click', () => {
+          cartModal.classList.add('translate-x-full');
+        });
+      } else {
+        console.error("Um ou mais elementos do carrinho não foram encontrados.");
+      }
+  
+      // Controle do Modal de Detalhes
+      const detailsModal = document.getElementById('detailsModal');
+      const closeDetails = document.getElementById('closeDetails');
+  
+      if (closeDetails && detailsModal) {
+        closeDetails.addEventListener('click', () => {
+          detailsModal.classList.add('-translate-x-full');
+        });
+      } else {
+        console.error("Botão ou modal de detalhes não encontrado.");
+      }
+    });
+  
+    // Função para abrir os modais e carregar os detalhes do produto via AJAX
+    function openDetailsModal(produtoId) {
+      // Abre o modal de detalhes (lado esquerdo)
+      const detailsModal = document.getElementById('detailsModal');
+      detailsModal.classList.remove('-translate-x-full');
+  
+      // Abre o modal do carrinho (lado direito)
+      const cartModal = document.getElementById('cartModal');
+      cartModal.classList.remove('translate-x-full');
+  
+      // Faz uma requisição para buscar os detalhes do produto
+      fetch(`/api/produtos/${produtoId}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Erro ao carregar produto');
+          }
+          return response.json();
+        })
+        .then(produto => {
+          const detailsContent = document.getElementById('detailsContent');
+          detailsContent.innerHTML = `
+            <h3 class="text-2xl font-bold mb-2">${produto.nome}</h3>
+            <p class="mb-2">${produto.descricao}</p>
+            <p class="text-green-700 font-bold mb-2">R$ ${Number(produto.preco).toFixed(2)}</p>
+            <p class="mb-2">Quantidade: ${produto.quantidade}</p>
+          `;
+        })
+        .catch(error => {
+          console.error(error);
+          const detailsContent = document.getElementById('detailsContent');
+          detailsContent.innerHTML = `<p>Erro ao carregar detalhes do produto.</p>`;
+        });
+    }
+  </script>
+  

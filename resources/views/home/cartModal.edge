@@ -1,0 +1,20 @@
+<!-- Modal do Carrinho (lado direito) -->
+<div id="cartModal" 
+     class="fixed top-0 right-0 h-full w-80 bg-white shadow-lg transform translate-x-full 
+            transition-transform duration-300 z-50">
+  <div class="p-4 h-full flex flex-col">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-xl font-bold">Seu Carrinho</h2>
+      <button id="closeCart" class="text-gray-600 text-2xl">&times;</button>
+    </div>
+    <!-- Conteúdo do Carrinho -->
+    <ul class="flex-grow">
+      <li class="mb-2">Produto 1 - R$ 50,00</li>
+      <li class="mb-2">Produto 2 - R$ 70,00</li>
+      <li class="mb-2">Produto 3 - R$ 100,00</li>
+    </ul>
+    <button class="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 mt-4">
+      Finalizar Compra
+    </button>
+  </div>
+</div>

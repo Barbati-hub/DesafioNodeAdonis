@@ -1,0 +1,35 @@
+@layout('layouts/app')
+
+@section('title')
+Novo Produto
+@endsection
+
+@section('content')
+<div class="max-w-2xl mx-auto bg-white p-6 rounded-md shadow-md">
+  <h2 class="text-xl font-semibold mb-4">Criar Novo Produto</h2>
+  <form action="/produtos" method="POST">
+    <!-- @csrf se estiver usando CSRF -->
+    <div class="mb-4">
+      <label class="block mb-1">Nome</label>
+      <input type="text" name="nome" class="w-full border p-2 rounded" />
+    </div>
+
+    <div class="mb-4">
+      <label class="block mb-1">Descrição</label>
+      <input type="text" name="descricao" class="w-full border p-2 rounded" />
+    </div>
+
+    <div class="mb-4">
+      <label class="block mb-1">Preço</label>
+      <input type="number" name="preco" step="0.01" class="w-full border p-2 rounded" />
+    </div>
+
+    <div class="mb-4">
+      <label class="block mb-1">Quantidade</label>
+      <input type="number" name="quantidade" class="w-full border p-2 rounded" />
+    </div>
+
+    <button class="bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Salvar</button>
+  </form>
+</div>
+@endsection

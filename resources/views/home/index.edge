@@ -1,0 +1,18 @@
+@layout('layouts/public')
+
+@section('title')
+Minha Loja - Página Inicial
+@endsection
+
+@section('content')
+  @include('home.header')
+  @include('home.main')
+  @include('home.cartModal')
+  @include('home.detailsModal')
+@endsection
+
+
+
+@section('scripts')
+  @include('home.scripts')
+  @endsection

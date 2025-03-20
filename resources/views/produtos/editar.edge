@@ -12,12 +12,16 @@
   <p class="text-gray-600 mb-6">Altere os campos abaixo e clique em **Salvar Alterações**.</p>
 
   @if(produto)
-  <form id="produto-form">
+  <form action="/produtos/{{ produto.id }}" method="POST">
+    <!-- @csrf se estiver usando CSRF -->
+    <!-- Precisamos do método PUT no AdonisJS -->
+    <!-- @method('PUT') -->
+
     <div class="mb-4">
       <label class="block text-gray-700 font-semibold flex items-center gap-2">
         <i data-lucide="tag"></i> Nome
       </label>
-      <input type="text" id="nome" value="{{ produto.nome }}" 
+      <input type="text" name="nome" value="{{ produto.nome }}"
         class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 shadow-sm transition">
     </div>
 
@@ -25,7 +29,7 @@
       <label class="block text-gray-700 font-semibold flex items-center gap-2">
         <i data-lucide="align-left"></i> Descrição
       </label>
-      <input type="text" id="descricao" value="{{ produto.descricao }}" 
+      <input type="text" name="descricao" value="{{ produto.descricao }}"
         class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 shadow-sm transition">
     </div>
 
@@ -34,7 +38,7 @@
         <label class="block text-gray-700 font-semibold flex items-center gap-2">
           <i data-lucide="dollar-sign"></i> Preço (R$)
         </label>
-        <input type="number" id="preco" step="0.01" value="{{ produto.preco }}" 
+        <input type="number" name="preco" step="0.01" value="{{ produto.preco }}"
           class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 shadow-sm transition">
       </div>
 
@@ -42,87 +46,24 @@
         <label class="block text-gray-700 font-semibold flex items-center gap-2">
           <i data-lucide="layers"></i> Quantidade
         </label>
-        <input type="number" id="quantidade" value="{{ produto.quantidade }}" 
+        <input type="number" name="quantidade" value="{{ produto.quantidade }}"
           class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 shadow-sm transition">
       </div>
     </div>
 
-    <button type="button" onclick="atualizarProduto({{ produto.id }})"
+    <button type="submit"
       class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition duration-300">
       <i data-lucide="save"></i> Salvar Alterações
     </button>
   </form>
-
-  <!-- Mensagem de Feedback -->
-  <div id="mensagem" class="mt-4 text-center hidden text-lg"></div>
+  @else
+  <p class="text-red-500 text-center font-bold text-lg">❌ Produto não encontrado.</p>
+  @endif
 
   <div class="mt-6 text-center">
     <a href="/produtos" class="text-blue-500 hover:underline flex items-center justify-center gap-2">
       <i data-lucide="arrow-left"></i> Voltar para a lista de produtos
     </a>
   </div>
-
-  @else
-  <p class="text-red-500 text-center font-bold text-lg">❌ Produto não encontrado.</p>
-  <div class="text-center mt-6">
-    <a href="/produtos" class="text-blue-500 hover:underline flex items-center justify-center gap-2">
-      <i data-lucide="arrow-left"></i> Voltar para a lista de produtos
-    </a>
-  </div>
-  @endif
 </div>
-@endsection
-
-@section('scripts')
-<script>
-  async function atualizarProduto(id) {
-    const nome = document.getElementById("nome").value.trim();
-    const descricao = document.getElementById("descricao").value.trim();
-    const preco = parseFloat(document.getElementById("preco").value);
-    const quantidade = parseInt(document.getElementById("quantidade").value);
-
-    const mensagem = document.getElementById("mensagem");
-    mensagem.classList.add("hidden"); 
-
-    if (!nome || !descricao || isNaN(preco) || isNaN(quantidade)) {
-      mensagem.textContent = "⚠️ Todos os campos são obrigatórios!";
-      mensagem.classList.add("text-red-500", "font-bold");
-      mensagem.classList.remove("hidden");
-      return;
-    }
-
-    try {
-      const response = await fetch(`/produtos/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nome, descricao, preco, quantidade })
-      });
-
-      const result = await response.json();
-
-      if (response.ok) {
-        mensagem.textContent = "✅ Produto atualizado com sucesso!";
-        mensagem.classList.remove("text-red-500");
-        mensagem.classList.add("text-green-600", "font-bold");
-        mensagem.classList.remove("hidden");
-
-        setTimeout(() => {
-          window.location.href = "/produtos"; 
-        }, 1500);
-      } else {
-        mensagem.textContent = "❌ Erro ao atualizar o produto.";
-        mensagem.classList.add("text-red-500");
-        mensagem.classList.remove("hidden");
-      }
-    } catch (error) {
-      mensagem.textContent = "❌ Erro ao conectar com o servidor.";
-      mensagem.classList.add("text-red-500");
-      mensagem.classList.remove("hidden");
-    }
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    lucide.createIcons(); 
-  });
-</script>
 @endsection

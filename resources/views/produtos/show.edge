@@ -1,0 +1,18 @@
+@layout('layouts/app')
+
+@section('title')
+Detalhes do Produto - {{ produto.nome }}
+@endsection
+
+@section('content')
+<div class="max-w-2xl mx-auto bg-white p-6 rounded-md shadow-md">
+  <h2 class="text-2xl font-bold mb-4">{{ produto.nome }}</h2>
+  <p class="mb-2">Descrição: {{ produto.descricao }}</p>
+  <p class="mb-2">Preço: R$ {{ Number(produto.preco).toFixed(2) }}</p>
+  <p class="mb-2">Quantidade: {{ produto.quantidade }}</p>
+
+  <div class="mt-6">
+    <a href="/produtos" class="text-blue-500 hover:underline">Voltar à lista</a>
+  </div>
+</div>
+@endsection
