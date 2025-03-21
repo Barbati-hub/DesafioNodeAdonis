@@ -13,9 +13,15 @@
 import 'reflect-metadata'
 import sourceMapSupport from 'source-map-support'
 import { Ignitor } from '@adonisjs/core/build/standalone'
+import { join } from 'path'
 
 sourceMapSupport.install({ handleUncaughtExceptions: false })
+
+// Force port 3333
+process.env.PORT = '3333'
+process.env.HOST = 'localhost'
 
 new Ignitor(__dirname)
   .httpServer()
   .start()
+  .catch(console.error)

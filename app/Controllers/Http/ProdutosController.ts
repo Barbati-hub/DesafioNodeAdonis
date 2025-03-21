@@ -2,10 +2,19 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Produto from 'App/Models/Produto'
 import cloudinary from 'Config/cloudinary'
 
+interface ProdutoData {
+  nome: string
+  descricao: string
+  preco: number
+  quantidade: number
+  imagemUrl?: string
+}
+
 export default class ProdutosController {
   // 1. Listar todos os produtos
   public async index({ view }: HttpContextContract) {
     const produtos = await Produto.all()
+    console.log('Produtos cadastrados:', produtos)
     // Renderiza 'resources/views/produtos/index.edge'
     return view.render('produtos/index', { produtos })
   }
@@ -19,7 +28,7 @@ export default class ProdutosController {
   // 3. Salvar novo produto
   public async store({ request, response }: HttpContextContract) {
     // Recebe os dados do formulário
-    const dados = request.only(['nome', 'descricao', 'preco', 'quantidade'])
+    const dados: ProdutoData = request.only(['nome', 'descricao', 'preco', 'quantidade'])
     
     // Trata o upload do arquivo, se existir
     const imagemFile = request.file('imagem', {
@@ -35,7 +44,7 @@ export default class ProdutosController {
         })
         
         // Armazena a URL retornada
-        dados['imagem_url'] = uploadResponse.secure_url
+        dados.imagemUrl = uploadResponse.secure_url
       } catch (error) {
         console.error('Erro no upload:', error)
         return response.status(500).json({ error: 'Erro ao fazer upload da imagem.' })

@@ -1,18 +1,60 @@
 @layout('layouts/public')
 
 @section('title')
-Minha Loja - Página Inicial
+Loja Virtual - Produtos
 @endsection
 
 @section('content')
-  @include('home.header')
-  @include('home.main')
-  @include('home.cartModal')
-  @include('home.detailsModal')
+  @include('home/header')
+
+  <main class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-8">Nossos Produtos</h1>
+    
+    <!-- Grid de Produtos -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      @each(produto in produtos)
+        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+          <!-- Imagem do Produto -->
+          <div class="h-48 overflow-hidden">
+            @if(produto.imagemUrl)
+              <img src="{{ produto.imagemUrl }}" alt="{{ produto.nome }}" class="w-full h-full object-cover" />
+            @else
+              <div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
+                Sem imagem
+              </div>
+            @endif
+          </div>
+          
+          <div class="p-4">
+            <h3 class="text-xl font-semibold mb-2">{{ produto.nome }}</h3>
+            <p class="text-gray-600 mb-2">{{ produto.descricao }}</p>
+            <div class="flex justify-between items-center">
+              <span class="text-2xl font-bold text-green-600">R$ {{ Number(produto.preco).toFixed(2) }}</span>
+              <div class="space-x-2">
+                <button 
+                  onclick="showDetails('{{ produto.id }}')"
+                  class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+                  <i class="fas fa-info-circle"></i>
+                  Detalhes
+                </button>
+                <button 
+                  onclick="handleCompra('{{ produto.id }}')"
+                  class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">
+                  <i class="fas fa-shopping-cart"></i>
+                  Comprar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      @end
+    </div>
+  </main>
+
+  @include('home/cartModal')
+  @include('home/detailsModal')
 @endsection
 
-
-
 @section('scripts')
-  @include('home.scripts')
-  @endsection
+  @include('home/scripts')
+@endsection

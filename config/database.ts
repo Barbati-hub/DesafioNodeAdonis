@@ -2,7 +2,7 @@ import Env from '@ioc:Adonis/Core/Env'
 import { DatabaseConfig } from '@ioc:Adonis/Lucid/Database'
 
 const databaseConfig: DatabaseConfig = {
-  connection: 'pg',
+  connection: Env.get('DB_CONNECTION'),
 
   connections: {
     pg: {
@@ -11,13 +11,16 @@ const databaseConfig: DatabaseConfig = {
         host: Env.get('PG_HOST'),
         port: Env.get('PG_PORT'),
         user: Env.get('PG_USER'),
-        password: Env.get('PG_PASSWORD', ''),
+        password: Env.get('PG_PASSWORD'),
         database: Env.get('PG_DB_NAME'),
       },
-      healthCheck: true,
+      migrations: {
+        naturalSort: true,
+      },
+      healthCheck: false,
       debug: false,
     },
-  },
+  }
 }
 
 export default databaseConfig

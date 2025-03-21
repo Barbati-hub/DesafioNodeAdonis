@@ -1,94 +1,50 @@
-@layout('layouts/app')
-
-@section('title')
-  📊 Dashboard
-@endsection
-
-@section('content')
-  <!-- Header com usuário logado -->
-  <div class="flex items-center justify-between bg-white p-4 rounded-lg shadow-md mb-6">
-    <h1 class="text-2xl font-semibold text-gray-800 flex items-center gap-3">
-      <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
-        <i data-lucide="user" class="w-6 h-6 text-gray-600"></i>
-      </div>
-      Bem-vindo, {{ usuario?.nome || 'Usuário' }}
-    </h1>
-    
-    <form action="/api/logout" method="POST">
-      <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 transition duration-300">
-        <i data-lucide="log-out"></i> Sair
-      </button>
-    </form>
-  </div>
-
-  <div class="space-y-8">
-    <!-- Cards de Métricas -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <!-- Card: Produtos -->
-      <div class="bg-white p-6 rounded-lg shadow-lg flex items-center justify-between transform hover:scale-105 transition duration-300">
-        <div>
-          <h3 class="text-gray-700 text-lg font-semibold">Produtos</h3>
-          <p class="text-3xl font-bold text-gray-900 mt-2">120</p>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Desafio Node</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold">Dashboard</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    @if(user)
+                        <div class="flex items-center space-x-3">
+                            @if(user.picture || user.avatar)
+                                <img src="{{ user.picture || user.avatar }}" alt="Avatar" class="w-8 h-8 rounded-full">
+                            @endif
+                            <span class="text-gray-700">{{ user.name }}</span>
+                            <a href="/logout" class="text-red-600 hover:text-red-800">Sair</a>
+                        </div>
+                    @endif
+                </div>
+            </div>
         </div>
-        <i data-lucide="box" class="w-12 h-12 text-blue-500"></i>
-      </div>
+    </nav>
 
-      <!-- Card: Pedidos -->
-      <div class="bg-white p-6 rounded-lg shadow-lg flex items-center justify-between transform hover:scale-105 transition duration-300">
-        <div>
-          <h3 class="text-gray-700 text-lg font-semibold">Pedidos</h3>
-          <p class="text-3xl font-bold text-gray-900 mt-2">85</p>
+    <main class="max-w-7xl mx-auto py-6 px-4">
+        <div class="bg-white shadow rounded-lg p-6">
+            <h2 class="text-2xl font-bold mb-4">Bem-vindo, {{ user ? user.name : 'Usuário' }}!</h2>
+            
+            @if(user)
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-4">
+                        @if(user.picture || user.avatar)
+                            <img src="{{ user.picture || user.avatar }}" alt="Avatar" class="w-16 h-16 rounded-full">
+                        @endif
+                        <div>
+                            <p class="text-gray-600">Email: {{ user.email }}</p>
+                        </div>
+                    </div>
+                </div>
+            @endif
         </div>
-        <i data-lucide="shopping-cart" class="w-12 h-12 text-green-500"></i>
-      </div>
-
-      <!-- Card: Mesas Ativas -->
-      <div class="bg-white p-6 rounded-lg shadow-lg flex items-center justify-between transform hover:scale-105 transition duration-300">
-        <div>
-          <h3 class="text-gray-700 text-lg font-semibold">Mesas Ativas</h3>
-          <p class="text-3xl font-bold text-gray-900 mt-2">15</p>
-        </div>
-        <i data-lucide="table" class="w-12 h-12 text-purple-500"></i>
-      </div>
-    </div>
-
-    <!-- Tabela de Produtos -->
-    <div class="bg-white p-6 rounded-lg shadow-lg">
-      <h2 class="text-xl font-semibold text-gray-700 mb-4">Exemplo de Produtos</h2>
-      <table class="w-full text-left">
-        <thead>
-          <tr class="bg-gray-200 text-gray-700">
-            <th class="p-3">ID</th>
-            <th class="p-3">Produto</th>
-            <th class="p-3">Categoria</th>
-            <th class="p-3">Preço</th>
-            <th class="p-3">Estoque</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="border-b hover:bg-gray-100">
-            <td class="p-3">1</td>
-            <td class="p-3">Camiseta Básica</td>
-            <td class="p-3">Vestuário</td>
-            <td class="p-3">R$ 49,90</td>
-            <td class="p-3">150</td>
-          </tr>
-          <tr class="border-b hover:bg-gray-100">
-            <td class="p-3">2</td>
-            <td class="p-3">Calça Jeans</td>
-            <td class="p-3">Vestuário</td>
-            <td class="p-3">R$ 89,90</td>
-            <td class="p-3">80</td>
-          </tr>
-          <tr class="hover:bg-gray-100">
-            <td class="p-3">3</td>
-            <td class="p-3">Tênis Esportivo</td>
-            <td class="p-3">Calçados</td>
-            <td class="p-3">R$ 129,90</td>
-            <td class="p-3">50</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-@endsection
+    </main>
+</body>
+</html>

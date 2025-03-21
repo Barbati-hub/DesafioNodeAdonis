@@ -25,7 +25,7 @@ import type { ValidatorConfig } from '@ioc:Adonis/Core/Validator'
 | be decrypted.
 |
 */
-export const appKey: string = Env.get('APP_KEY')
+export const appKey = Env.get('APP_KEY')
 
 /*
 |--------------------------------------------------------------------------
@@ -48,7 +48,7 @@ export const http: ServerConfig = {
   | so on.
   |
   */
-  allowMethodSpoofing: true,
+  allowMethodSpoofing: false,
 
   /*
   |--------------------------------------------------------------------------
@@ -109,6 +109,8 @@ export const http: ServerConfig = {
     secure: false,
     sameSite: false,
   },
+
+  forceContentNegotiationTo: 'application/json',
 }
 
 /*

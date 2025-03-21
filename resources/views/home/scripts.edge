@@ -49,6 +49,17 @@
         })
         .then(produto => {
           const detailsContent = document.getElementById('detailsContent');
+          const productImage = document.getElementById('productImage');
+          
+          // Atualiza a imagem do produto
+          if (produto.imagemUrl) {
+            productImage.src = produto.imagemUrl;
+            productImage.alt = produto.nome;
+            document.getElementById('detailsImage').classList.remove('hidden');
+          } else {
+            document.getElementById('detailsImage').classList.add('hidden');
+          }
+
           detailsContent.innerHTML = `
             <h3 class="text-2xl font-bold mb-2">${produto.nome}</h3>
             <p class="mb-2">${produto.descricao}</p>
@@ -62,5 +73,131 @@
           detailsContent.innerHTML = `<p>Erro ao carregar detalhes do produto.</p>`;
         });
     }
-  </script>
+  
+    // Gerenciamento do carrinho
+    let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    updateCartCount();
+  
+    function addToCart(produtoId) {
+        // Busca os detalhes do produto
+        fetch(`/api/produtos/${produtoId}`)
+            .then(response => response.json())
+            .then(produto => {
+                // Verifica se o produto já está no carrinho
+                const existingItem = cart.find(item => item.id === produto.id);
+                
+                if (existingItem) {
+                    existingItem.quantidade += 1;
+                } else {
+                    cart.push({
+                        id: produto.id,
+                        nome: produto.nome,
+                        preco: produto.preco,
+                        quantidade: 1
+                    });
+                }
+                
+                // Salva no localStorage e atualiza a interface
+                saveCart();
+                updateCartCount();
+                openCart();
+            })
+            .catch(error => {
+                console.error('Erro ao adicionar ao carrinho:', error);
+                alert('Erro ao adicionar produto ao carrinho');
+            });
+    }
+  
+    function removeFromCart(produtoId) {
+        cart = cart.filter(item => item.id !== produtoId);
+        saveCart();
+        updateCartUI();
+    }
+  
+    function updateQuantity(produtoId, delta) {
+        const item = cart.find(item => item.id === produtoId);
+        if (item) {
+            item.quantidade = Math.max(1, item.quantidade + delta);
+            saveCart();
+            updateCartUI();
+        }
+    }
+  
+    function saveCart() {
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCount();
+    }
+  
+    function updateCartCount() {
+        const count = cart.reduce((total, item) => total + item.quantidade, 0);
+        document.getElementById('cartCount').textContent = count;
+    }
+  
+    function updateCartUI() {
+        const cartItems = document.getElementById('cartItems');
+        const cartTotal = document.getElementById('cartTotal');
+        
+        // Limpa o conteúdo atual
+        cartItems.innerHTML = '';
+        
+        // Adiciona cada item do carrinho
+        cart.forEach(item => {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'flex justify-between items-center p-2 border-b';
+            itemElement.innerHTML = `
+                <div class="flex-1">
+                    <h3 class="font-semibold">${item.nome}</h3>
+                    <p class="text-gray-600">R$ ${item.preco.toFixed(2)} x ${item.quantidade}</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="updateQuantity(${item.id}, -1)" class="px-2 py-1 bg-gray-200 rounded">-</button>
+                    <span>${item.quantidade}</span>
+                    <button onclick="updateQuantity(${item.id}, 1)" class="px-2 py-1 bg-gray-200 rounded">+</button>
+                    <button onclick="removeFromCart(${item.id})" class="text-red-500 hover:text-red-700">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            `;
+            cartItems.appendChild(itemElement);
+        });
+        
+        // Atualiza o total
+        const total = cart.reduce((sum, item) => sum + (item.preco * item.quantidade), 0);
+        cartTotal.textContent = `R$ ${total.toFixed(2)}`;
+    }
+  
+    function openCart() {
+        document.getElementById('cartModal').classList.remove('hidden');
+        updateCartUI();
+    }
+  
+    function closeCart() {
+        document.getElementById('cartModal').classList.add('hidden');
+    }
+  
+    function checkout() {
+        const user = {{ user ? JSON.stringify(user) : 'null' }};
+        
+        if (!user) {
+            window.location.href = '/auth/google';
+            return;
+        }
+        
+        if (cart.length === 0) {
+            alert('Seu carrinho está vazio!');
+            return;
+        }
+        
+        // Aqui você pode implementar a lógica de checkout
+        // Por exemplo, enviar para uma rota de processamento de pedido
+        alert('Função de checkout ainda não implementada');
+    }
+  
+    // Fecha o modal quando clicar fora dele
+    document.getElementById('cartModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeCart();
+        }
+    });
+</script>
   

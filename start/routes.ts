@@ -1,29 +1,34 @@
 import Route from '@ioc:Adonis/Core/Route'
 import Hash from '@ioc:Adonis/Core/Hash'
-import Usuario from 'App/Models/Usuario'
+import User from 'App/Models/User'
 import Produto from 'App/Models/Produto'
 
-// Página inicial leva para login
+// Página inicial mostra os produtos
 Route.get('/', async ({ view }) => {
-  return view.render('login')
+  const produtos = await Produto.all()
+  return view.render('home.index', { produtos })
 })
 
-// Rota protegida da Dashboard (apenas logados podem acessar)
-Route.get('/dashboard', async ({ view, session, response }) => {
-  const usuario = session.get('usuario')
-  console.log('Sessão atual:', session.all())
-  if (!usuario) {
-    return response.redirect('/')
-  }
-  return view.render('dashboard', { usuario })
+// Rotas de autenticação
+Route.get('/login', async ({ view }) => {
+  return view.render('welcome')
 })
+
+Route.get('/auth/google', 'AuthController.google').middleware('googleAuth')
+Route.get('/auth/google/callback', 'AuthController.googleCallback').middleware('googleAuth')
+Route.get('/logout', 'AuthController.logout')
+
+// Rota protegida
+Route.get('/dashboard', async ({ view, session }) => {
+  const user = session.get('user')
+  return view.render('dashboard', { user })
+}).middleware('googleAuth')
 
 // Outras páginas (acessíveis sem login)
 Route.get('/home', async ({ view }) => {
   const produtos = await Produto.all()
   return view.render('home.index', { produtos })
 })
-
 
 Route.get('/usuarios', async ({ view }) => view.render('usuarios/index'))
 Route.get('/usuarios/novo', async ({ view }) => view.render('usuarios/novo'))
@@ -45,23 +50,25 @@ Route.get('/produtos/novo', 'ProdutosController.create')
 Route.post('/produtos', 'ProdutosController.store')
 Route.get('/produtos/:id', 'ProdutosController.show')
 Route.get('/produtos/:id/editar', 'ProdutosController.edit')
-
 Route.put('/produtos/:id', 'ProdutosController.update')
 Route.delete('/produtos/:id', 'ProdutosController.destroy')
 
 // API: Rotas de Autenticação
 Route.post('/api/login', async ({ request, response, session }) => {
   const { email, senha } = request.only(['email', 'senha'])
-  const usuario = await Usuario.query().where('email', email).first()
-  if (!usuario) {
+  const user = await User.query().where('email', email).first()
+  if (!user) {
     return response.unauthorized({ message: 'E-mail ou senha inválidos' })
   }
-  const senhaValida = await Hash.verify(usuario.senha, senha)
+  if (!user.senha) {
+    return response.unauthorized({ message: 'E-mail ou senha inválidos' })
+  }
+  const senhaValida = await Hash.verify(user.senha, senha)
   if (!senhaValida) {
     return response.unauthorized({ message: 'E-mail ou senha inválidos' })
   }
-  session.put('usuario', { id: usuario.id, nome: usuario.nome, role: usuario.role })
-  return response.ok({ message: '✅ Login realizado com sucesso', usuario })
+  session.put('user', { id: user.id, nome: user.name, role: user.role })
+  return response.ok({ message: '✅ Login realizado com sucesso', user })
 })
 
 Route.post('/api/logout', async ({ session, response }) => {

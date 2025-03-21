@@ -1,5 +1,53 @@
 {
   "commands": {
+    "make:admin": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/MakeAdmin",
+      "commandName": "make:admin",
+      "description": "Promove um usuário para administrador usando o email",
+      "args": [],
+      "aliases": [],
+      "flags": []
+    },
+    "list:products": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/ListProducts",
+      "commandName": "list:products",
+      "description": "Lista todos os produtos cadastrados",
+      "args": [],
+      "aliases": [],
+      "flags": []
+    },
+    "check:products": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/CheckProducts",
+      "commandName": "check:products",
+      "description": "Verifica os produtos cadastrados no banco de dados",
+      "args": [],
+      "aliases": [],
+      "flags": []
+    },
+    "add:products": {
+      "settings": {
+        "loadApp": true,
+        "stayAlive": false
+      },
+      "commandPath": "./commands/AddProducts",
+      "commandName": "add:products",
+      "description": "Adiciona produtos ao banco de dados mantendo os existentes",
+      "args": [],
+      "aliases": [],
+      "flags": []
+    },
     "dump:rcfile": {
       "settings": {},
       "commandPath": "@adonisjs/core/build/commands/DumpRc",

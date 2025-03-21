@@ -1,8 +1,11 @@
 {
   "typescript": true,
   "commands": [
-    "./commands",
-    "@adonisjs/core/build/commands/index.js",
+    "./commands/MakeAdmin",
+    "./commands/ListProducts",
+    "./commands/CheckProducts",
+    "./commands/AddProducts",
+    "@adonisjs/core/build/commands",
     "@adonisjs/repl/build/commands",
     "@adonisjs/lucid/build/commands"
   ],
@@ -25,31 +28,21 @@
     "@adonisjs/shield",
     "@adonisjs/lucid"
   ],
-  "metaFiles": [
-    {
-      "pattern": "public/**",
-      "reloadServer": false
-    },
-    {
-      "pattern": "resources/views/**/*.edge",
-      "reloadServer": false
-    }
-  ],
   "aceProviders": [
     "@adonisjs/repl"
   ],
-  "tests": {
-    "suites": [
-      {
-        "name": "functional",
-        "files": [
-          "tests/functional/**/*.spec(.ts|.js)"
-        ],
-        "timeout": 60000
-      }
-    ]
+  "metaFiles": [
+    "resources/views/**/*.edge",
+    {
+      "pattern": "database/migrations/*.ts",
+      "reloadServer": false
+    }
+  ],
+  "directories": {
+    "public": "public"
   },
-  "testProviders": [
-    "@japa/preset-adonis/TestsProvider"
-  ]
+  "httpServer": {
+    "port": 3333,
+    "host": "localhost"
+  }
 }

@@ -1,0 +1,6 @@
+ id |          nome           |                                                descricao                                                | preco  | quantidade |                                            imagem_url                                            |          created_at           |          updated_at           
+----+-------------------------+---------------------------------------------------------------------------------------------------------+--------+------------+--------------------------------------------------------------------------------------------------+-------------------------------+-------------------------------
+  3 | Motorola Moto G 24      | Smartphone Motorola Moto g24 256GB  8GB (4GB RAM + 4GB RAM Boost) AI Camera 50MP Night Vision - Grafite | 764.15 |        100 | https://res.cloudinary.com/dzyeh5qdp/image/upload/v1742504393/produtos/cdysdbrcsms5l7hjc23f.png  | 2025-03-20 16:59:53.676477-04 | 2025-03-20 16:59:53.676477-04
+  4 | Nobreak Sms lite 1200va | Nobreak Sms lite 1200va entrada bivolt automático e saída 115v 29205                                    | 712.78 |         60 | https://res.cloudinary.com/dzyeh5qdp/image/upload/v1742504557/produtos/powobkmblzjbkiqegewj.webp | 2025-03-20 17:02:37.696282-04 | 2025-03-20 17:02:37.696282-04
+(2 rows)
+

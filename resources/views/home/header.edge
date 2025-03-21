@@ -1,26 +1,45 @@
-<header class="bg-white shadow-md p-4 flex justify-between items-center">
-    <div class="text-2xl font-bold text-gray-800">Minha Loja</div>
-    <div class="flex items-center space-x-6">
-      <!-- Área do Usuário -->
-      <div class="flex items-center space-x-2">
-        <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                d="M5.121 17.804A9 9 0 1118.879 6.196M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-        </svg>
-        <span class="text-gray-700">Usuário</span>
-      </div>
-      <!-- Carrinho -->
-      <div class="relative">
-        <button id="cartButton" class="flex items-center focus:outline-none p-4">
-          <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.5 7.5a1 1 0 001 1.5h12a1 1 0 001-1.5L17 13M7 13h10" />
-          </svg>
-        </button>
-        <span class="absolute top-0 right-0 inline-flex items-center justify-center px-2 py-1 text-xs font-bold leading-none text-white bg-red-600 rounded-full">
-          3
-        </span>
-      </div>
+<nav class="bg-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex flex-col">
+            @if(flashMessages.has('error'))
+                <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    <span class="block sm:inline">{{ flashMessages.get('error') }}</span>
+                </div>
+            @endif
+            
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="text-xl font-bold text-gray-800">Loja Virtual</a>
+                    <div class="ml-10 space-x-4">
+                        <a href="/home" class="text-gray-600 hover:text-gray-900">Produtos</a>
+                        @if(user && user.role === 'admin')
+                            <a href="/dashboard" class="text-gray-600 hover:text-gray-900">Dashboard</a>
+                        @endif
+                    </div>
+                </div>
+                <div class="flex items-center space-x-4">
+                    @if(user)
+                        <div class="flex items-center space-x-3">
+                            @if(user.picture || user.avatar)
+                                <img src="{{ user.picture || user.avatar }}" alt="Avatar" class="w-8 h-8 rounded-full">
+                            @endif
+                            <span class="text-gray-700">{{ user.name }}</span>
+                            <a href="/logout" class="text-red-600 hover:text-red-800">Sair</a>
+                        </div>
+                    @else
+                        <a href="/auth/google" 
+                           class="flex items-center px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors">
+                            <img src="https://www.google.com/favicon.ico" alt="Google Logo" class="w-4 h-4 mr-2">
+                            <span>Entrar com Google</span>
+                        </a>
+                    @endif
+                    <button onclick="openCart()" class="text-gray-600 hover:text-gray-900">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span id="cartCount" class="ml-1">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
-  </header>
+</nav>
   

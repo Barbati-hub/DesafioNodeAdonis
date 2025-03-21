@@ -1,16 +1,34 @@
-<!-- Modal de Detalhes do Produto (lado esquerdo, oculto por padrão) -->
-<div id="detailsModal" 
-     class="fixed top-0 left-0 h-full bg-white shadow-lg transform -translate-x-full 
-            transition-transform duration-300 z-40" 
-     style="width: calc(100% - 20rem);">
-  <div class="p-4 h-full overflow-auto">
-    <div class="flex justify-between items-center mb-4">
-      <h2 class="text-xl font-bold">Detalhes do Produto</h2>
-      <button id="closeDetails" class="text-gray-600 text-2xl">&times;</button>
+<!-- Modal de Detalhes -->
+<div id="detailsModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50">
+    <div class="fixed inset-y-0 left-0 max-w-xl w-full bg-white shadow-xl">
+        <div class="flex flex-col h-full">
+            <!-- Header do Modal -->
+            <div class="p-4 border-b flex justify-between items-center">
+                <h2 id="detailsTitle" class="text-xl font-bold">Detalhes do Produto</h2>
+                <button onclick="closeDetails()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <!-- Conteúdo dos Detalhes -->
+            <div class="flex-1 overflow-y-auto p-4">
+                <div class="space-y-4">
+                    <!-- Imagem do Produto -->
+                    <div id="detailsImage" class="w-full h-64 overflow-hidden rounded-lg">
+                        <img id="productImage" src="" alt="" class="w-full h-full object-cover" />
+                    </div>
+                    <p id="detailsDescription" class="text-gray-600"></p>
+                    <p class="font-bold">Preço: <span id="detailsPrice" class="text-green-600"></span></p>
+                </div>
+            </div>
+
+            <!-- Footer do Modal -->
+            <div class="p-4 border-t">
+                <button onclick="closeDetails()" 
+                        class="w-full py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors">
+                    Fechar
+                </button>
+            </div>
+        </div>
     </div>
-    <!-- Conteúdo dinâmico dos detalhes do produto -->
-    <div id="detailsContent">
-      <p>Carregando detalhes do produto...</p>
-    </div>
-  </div>
 </div>
