@@ -4,32 +4,46 @@ import User from 'App/Models/User'
 import Produto from 'App/Models/Produto'
 
 // Página inicial mostra os produtos
-Route.get('/', async ({ view }) => {
+Route.get('/', async ({ view, session }) => {
   const produtos = await Produto.all()
-  return view.render('home.index', { produtos })
+  const user = session.get('user')
+  return view.render('home.index', { produtos, user })
 })
 
 // Rotas de autenticação
-Route.get('/login', async ({ view }) => {
+Route.get('/login', async ({ view, session, response }) => {
+  const user = session.get('user')
+  if (user) {
+    return response.redirect('/home')
+  }
   return view.render('welcome')
 })
 
-Route.get('/auth/google', 'AuthController.google').middleware('googleAuth')
-Route.get('/auth/google/callback', 'AuthController.googleCallback').middleware('googleAuth')
+Route.get('/auth/google', async ({ response }) => {
+  return response.redirect().toPath('/auth/google/redirect')
+})
+
+Route.get('/auth/google/redirect', 'AuthController.google')
+Route.get('/auth/google/callback', 'AuthController.googleCallback')
 Route.get('/logout', 'AuthController.logout')
 
-// Rota protegida
-Route.get('/dashboard', async ({ view, session }) => {
-  const user = session.get('user')
-  return view.render('dashboard', { user })
+// Rotas protegidas
+Route.group(() => {
+  // Dashboard (apenas admin)
+  Route.get('/dashboard', async ({ view, session }) => {
+    const user = session.get('user')
+    return view.render('dashboard', { user })
+  })
+
+  // Home (usuários autenticados)
+  Route.get('/home', async ({ view, session }) => {
+    const user = session.get('user')
+    const produtos = await Produto.all()
+    return view.render('home.index', { produtos, user })
+  })
 }).middleware('googleAuth')
 
 // Outras páginas (acessíveis sem login)
-Route.get('/home', async ({ view }) => {
-  const produtos = await Produto.all()
-  return view.render('home.index', { produtos })
-})
-
 Route.get('/usuarios', async ({ view }) => view.render('usuarios/index'))
 Route.get('/usuarios/novo', async ({ view }) => view.render('usuarios/novo'))
 Route.get('/relatorios', async ({ view }) => view.render('relatorios'))

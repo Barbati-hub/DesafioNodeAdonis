@@ -1,72 +1,96 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { OAuth2Client } from 'google-auth-library'
+import Env from '@ioc:Adonis/Core/Env'
 import User from 'App/Models/User'
 
 export default class AuthController {
+  private client: OAuth2Client
+
+  constructor() {
+    const clientId = Env.get('GOOGLE_CLIENT_ID')
+    const clientSecret = Env.get('GOOGLE_CLIENT_SECRET')
+    const callbackUrl = Env.get('GOOGLE_CALLBACK_URL')
+
+    this.client = new OAuth2Client({
+      clientId,
+      clientSecret,
+      redirectUri: callbackUrl,
+    })
+  }
+
   public async google({ response }: HttpContextContract) {
-    console.log('Iniciando método google do AuthController')
     try {
-      // O middleware GoogleAuth já cuida do redirecionamento
-      console.log('Delegando para o middleware GoogleAuth')
+      const url = this.client.generateAuthUrl({
+        access_type: 'offline',
+        scope: ['profile', 'email'],
+        response_type: 'code'
+      })
+      return response.redirect(url)
     } catch (error) {
-      console.error('Erro no método google:', error)
-      return response.redirect('/login?error=Authentication failed')
+      console.error('Erro ao gerar URL de autenticação:', error)
+      return response.redirect('/login?error=auth_failed')
     }
   }
 
-  public async googleCallback({ response, session }: HttpContextContract) {
-    console.log('Iniciando método googleCallback do AuthController')
+  public async googleCallback({ request, response, session }: HttpContextContract) {
+    const { code } = request.qs()
+    
+    if (!code) {
+      return response.redirect('/login?error=missing_code')
+    }
+
     try {
-      const userData = session.get('user')
-      console.log('Dados do usuário na sessão:', userData)
-
-      if (!userData || !userData.email) {
-        console.error('Dados do usuário não encontrados na sessão')
-        return response.redirect('/login?error=Authentication failed')
+      // Obter tokens
+      const { tokens } = await this.client.getToken(code)
+      if (!tokens?.id_token) {
+        throw new Error('Tokens inválidos')
       }
 
-      // Procura ou cria o usuário
-      let user = await User.findBy('email', userData.email)
-      console.log('Usuário encontrado no banco:', user)
+      // Verificar token
+      const ticket = await this.client.verifyIdToken({
+        idToken: tokens.id_token,
+        audience: Env.get('GOOGLE_CLIENT_ID')
+      })
 
+      const payload = ticket.getPayload()
+      if (!payload?.email) {
+        throw new Error('Payload inválido')
+      }
+
+      // Procura ou cria usuário
+      let user = await User.findBy('email', payload.email)
       if (!user) {
-        console.log('Criando novo usuário')
         user = await User.create({
-          email: userData.email,
-          name: userData.name,
-          googleId: userData.sub || userData.email,
-          avatar: userData.picture,
-          role: 'user' // Por padrão, novos usuários são 'user'
+          email: payload.email,
+          name: payload.name || payload.email.split('@')[0],
+          googleId: payload.sub,
+          avatar: payload.picture,
+          role: 'user'
         })
-        console.log('Novo usuário criado:', user)
       }
 
-      // Atualiza a sessão com os dados do usuário do banco
-      session.put('user', {
+      // Atualiza a sessão
+      await session.clear()
+      await session.put('user', {
         id: user.id,
         email: user.email,
         name: user.name,
-        picture: userData.picture,
         avatar: user.avatar,
-        role: user.role // Inclui a role na sessão
+        role: user.role
       })
-      console.log('Sessão atualizada com dados do usuário')
 
-      // Se for admin, redireciona para o dashboard, senão para a home
-      if (user.role === 'admin') {
-        return response.redirect('/dashboard')
-      } else {
-        return response.redirect('/home')
-      }
+      // Força gravação da sessão
+      await session.commit()
+
+      return response.redirect('/home')
     } catch (error) {
-      console.error('Erro no callback do Google:', error)
-      return response.redirect('/login?error=Authentication failed')
+      console.error('Erro ao processar callback:', error)
+      return response.redirect('/login?error=token_processing')
     }
   }
 
   public async logout({ response, session }: HttpContextContract) {
-    console.log('Iniciando logout')
-    session.clear()
-    console.log('Sessão limpa')
-    return response.redirect('/')
+    await session.clear()
+    return response.redirect('/login')
   }
 } 

@@ -11,7 +11,7 @@
         <h1 class="text-2xl font-bold text-center mb-6">Bem-vindo ao Sistema</h1>
         
         <!-- Error Message -->
-        <div id="errorMessage" class="hidden mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+        <div id="errorMessage" class="hidden mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded text-center">
         </div>
         
         <div class="space-y-4">
@@ -25,36 +25,96 @@
     </div>
 
     <script>
-        // Logs para debug
-        console.log('Página de login carregada');
-        
+        // Limpa todos os cookies da sessão
+        function clearAllCookies() {
+            document.cookie.split(';').forEach(function(c) {
+                document.cookie = c.trim().split('=')[0] + '=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            });
+        }
+
+        // Função para mostrar mensagem de erro
+        function showError(message) {
+            const errorMessage = document.getElementById('errorMessage');
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+
+        // Função para desabilitar o botão
+        function disableButton() {
+            const btn = document.getElementById('googleLoginBtn');
+            const btnText = document.getElementById('googleBtnText');
+            btn.style.pointerEvents = 'none';
+            btn.classList.add('opacity-50');
+            btnText.textContent = 'Redirecionando...';
+            return btn;
+        }
+
+        // Função para habilitar o botão
+        function enableButton() {
+            const btn = document.getElementById('googleLoginBtn');
+            const btnText = document.getElementById('googleBtnText');
+            btn.style.pointerEvents = '';
+            btn.classList.remove('opacity-50');
+            btnText.textContent = 'Entrar com Google';
+        }
+
         // Verificar parâmetros na URL
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.has('error')) {
-            const errorMessage = document.getElementById('errorMessage');
-            errorMessage.textContent = 'Erro na autenticação. Por favor, tente novamente.';
-            errorMessage.classList.remove('hidden');
-            console.log('Erro detectado na URL:', urlParams.get('error'));
+            const error = urlParams.get('error');
+            const errorMessages = {
+                'missing_config': 'Erro de configuração do sistema. Por favor, contate o administrador.',
+                'missing_code': 'Código de autorização não encontrado. Por favor, tente novamente.',
+                'invalid_tokens': 'Tokens de autenticação inválidos. Por favor, tente novamente.',
+                'invalid_payload': 'Dados de autenticação inválidos. Por favor, tente novamente.',
+                'token_processing': 'Erro ao processar autenticação. Por favor, aguarde...',
+                'auth_failed': 'Falha na autenticação. Por favor, tente novamente.'
+            };
+            
+            const message = errorMessages[error] || 'Erro na autenticação. Por favor, tente novamente.';
+            showError(message);
+            
+            // Limpar a URL após mostrar o erro
+            if (window.history && window.history.replaceState) {
+                window.history.replaceState({}, document.title, '/login');
+            }
+
+            // Se for erro de token, tentar novamente após 3 segundos
+            if (error === 'token_processing') {
+                const btn = disableButton();
+                
+                setTimeout(() => {
+                    // Limpa todos os cookies antes de tentar novamente
+                    clearAllCookies();
+                    
+                    // Força um pequeno delay antes do redirecionamento
+                    setTimeout(() => {
+                        window.location.href = '/auth/google';
+                    }, 100);
+                }, 2000);
+            }
         }
         
+        // Prevenir múltiplos cliques e limpar cookies antes do login
         document.getElementById('googleLoginBtn').addEventListener('click', function(e) {
-            console.log('Botão do Google clicado');
-            const btnText = document.getElementById('googleBtnText');
-            btnText.textContent = 'Redirecionando...';
+            e.preventDefault();
+            const btn = disableButton();
             
-            // Log do URL de redirecionamento
-            console.log('Redirecionando para:', this.href);
+            // Limpa cookies antes de iniciar nova autenticação
+            clearAllCookies();
             
-            // Não vamos prevenir o comportamento padrão para permitir o redirecionamento
-            // mas vamos adicionar um timestamp para debug
-            console.log('Timestamp do clique:', new Date().toISOString());
+            // Pequeno delay antes do redirecionamento
+            setTimeout(() => {
+                window.location.href = this.href;
+            }, 100);
+            
+            // Se não houver redirecionamento em 5 segundos, reabilitar o botão
+            setTimeout(() => {
+                if (document.body.contains(btn)) {
+                    enableButton();
+                }
+            }, 5000);
         });
-
-        // Detectar se estamos voltando de uma tentativa de autenticação
-        if (document.referrer.includes('auth/google')) {
-            console.log('Voltando da autenticação Google');
-            console.log('Referrer:', document.referrer);
-        }
     </script>
 </body>
 </html> 

@@ -36,7 +36,7 @@ export default sessionConfig({
   | Note: Switching drivers will make existing sessions invalid.
   |
   */
-  driver: Env.get('SESSION_DRIVER'),
+  driver: 'cookie',
 
   /*
   |--------------------------------------------------------------------------
@@ -73,7 +73,7 @@ export default sessionConfig({
   | Example: `2 days`, `2.5 hrs`, `1y`, `5s` and so on.
   |
   */
-  age: '2h',
+  age: '15m',
 
   /*
   |--------------------------------------------------------------------------
@@ -87,7 +87,9 @@ export default sessionConfig({
   cookie: {
     path: '/',
     httpOnly: true,
-    sameSite: false,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: '15m'
   },
 
   /*

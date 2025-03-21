@@ -1,132 +1,162 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
-import type { RequestContract } from '@ioc:Adonis/Core/Request'
+import { OAuth2Client } from 'google-auth-library'
 import User from 'App/Models/User'
 import Env from '@ioc:Adonis/Core/Env'
-import { AuthenticationException } from '@adonisjs/auth/build/standalone'
-import { OAuth2Client } from 'google-auth-library'
-
-interface ExtendedRequest extends RequestContract {
-  session?: any
-  user?: any
-}
 
 export default class GoogleAuth {
+  private client: OAuth2Client
+
+  constructor() {
+    const clientId = Env.get('GOOGLE_CLIENT_ID')
+    const clientSecret = Env.get('GOOGLE_CLIENT_SECRET')
+    const callbackUrl = Env.get('GOOGLE_CALLBACK_URL')
+
+    console.log('🔧 Configuração OAuth:', { clientId, callbackUrl })
+
+    this.client = new OAuth2Client({
+      clientId,
+      clientSecret,
+      redirectUri: callbackUrl,
+    })
+  }
+
   public async handle(ctx: HttpContextContract, next: () => Promise<void>) {
-    console.log('GoogleAuth middleware iniciado')
-    console.log('URL atual:', ctx.request.url())
-    console.log('Método:', ctx.request.method())
-    console.log('Query params:', ctx.request.qs())
-    
     try {
-      // Verifica se as variáveis de ambiente estão configuradas
-      if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET || !process.env.GOOGLE_CALLBACK_URL) {
-        console.error('Configurações do Google OAuth não encontradas')
-        return ctx.response.redirect('/login?error=Configuration missing')
+      console.log('📍 URL atual:', ctx.request.url())
+      console.log('🔑 Sessão atual:', ctx.session.get('user'))
+
+      // Se estamos na rota de login, permitir acesso
+      if (ctx.request.url() === '/login') {
+        console.log('✅ Rota de login, permitindo acesso')
+        return next()
       }
 
-      const client = new OAuth2Client({
-        clientId: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        redirectUri: process.env.GOOGLE_CALLBACK_URL,
+      // Se já existe uma sessão válida
+      const sessionUser = ctx.session.get('user')
+      if (sessionUser?.id) {
+        console.log('👤 Usuário autenticado:', sessionUser)
+        // Verifica se é rota do dashboard
+        if (ctx.request.url() === '/dashboard' && sessionUser.role !== 'admin') {
+          console.log('🚫 Acesso negado ao dashboard para não-admin')
+          return ctx.response.redirect('/home')
+        }
+        return next()
+      }
+
+      // Se estamos no callback do Google
+      if (ctx.request.url().includes('/auth/google/callback')) {
+        console.log('🔄 Processando callback do Google')
+        return this.handleCallback(ctx)
+      }
+
+      // Se estamos iniciando autenticação com Google
+      if (ctx.request.url().includes('/auth/google')) {
+        console.log('🚀 Iniciando autenticação com Google')
+        return this.handleAuth(ctx)
+      }
+
+      // Se chegou aqui, não está autenticado
+      console.log('⚠️ Usuário não autenticado, redirecionando para login')
+      return ctx.response.redirect('/login')
+    } catch (error) {
+      console.error('❌ Erro no middleware:', error)
+      // Limpa a sessão em caso de erro
+      await ctx.session.clear()
+      return ctx.response.redirect('/login?error=auth_failed')
+    }
+  }
+
+  private async handleCallback(ctx: HttpContextContract) {
+    const { code } = ctx.request.qs()
+    console.log('🎫 Código recebido:', code ? 'Presente' : 'Ausente')
+    
+    if (!code) {
+      console.log('❌ Código ausente no callback')
+      return ctx.response.redirect('/login?error=missing_code')
+    }
+
+    try {
+      console.log('🔄 Obtendo tokens...')
+      // Obter tokens
+      const { tokens } = await this.client.getToken(code)
+      console.log('🎟️ Tokens obtidos:', tokens ? 'Sucesso' : 'Falha')
+      
+      if (!tokens?.id_token) {
+        console.error('❌ Tokens inválidos')
+        throw new Error('Tokens inválidos')
+      }
+
+      // Verificar token
+      console.log('🔍 Verificando token...')
+      const ticket = await this.client.verifyIdToken({
+        idToken: tokens.id_token,
+        audience: Env.get('GOOGLE_CLIENT_ID')
       })
 
-      console.log('Client OAuth2 configurado')
-      console.log('Redirect URI:', process.env.GOOGLE_CALLBACK_URL)
-
-      // Se estamos na rota de callback
-      if (ctx.request.url().includes('/auth/google/callback')) {
-        console.log('Processando callback do Google')
-        const code = ctx.request.qs().code
-        
-        if (!code) {
-          console.error('Código de autorização não encontrado')
-          return ctx.response.redirect('/login?error=No authorization code')
-        }
-
-        console.log('Código de autorização recebido')
-        
-        try {
-          const { tokens } = await client.getToken(code)
-          console.log('Tokens recebidos do Google')
-          
-          const ticket = await client.verifyIdToken({
-            idToken: tokens.id_token!,
-            audience: process.env.GOOGLE_CLIENT_ID
-          })
-          
-          const payload = ticket.getPayload()
-          if (!payload || !payload.email) {
-            console.error('Payload inválido ou email não encontrado')
-            return ctx.response.redirect('/login?error=Invalid payload')
-          }
-
-          console.log('Payload do token verificado:', {
-            email: payload.email,
-            name: payload.name,
-            picture: payload.picture
-          })
-
-          // Procura ou cria o usuário
-          let user = await User.findBy('email', payload.email)
-          if (!user) {
-            user = await User.create({
-              email: payload.email,
-              name: payload.name || payload.email.split('@')[0],
-              googleId: payload.sub,
-              avatar: payload.picture,
-              role: 'user'
-            })
-          }
-
-          // Armazenar informações do usuário na sessão
-          ctx.session.put('user', {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            picture: user.avatar,
-            role: user.role
-          })
-
-          console.log('Informações do usuário armazenadas na sessão')
-          await next()
-        } catch (error) {
-          console.error('Erro ao processar tokens:', error)
-          return ctx.response.redirect('/login?error=Token processing failed')
-        }
+      const payload = ticket.getPayload()
+      console.log('📦 Payload:', payload ? 'Recebido' : 'Ausente')
+      
+      if (!payload?.email) {
+        console.error('❌ Payload inválido')
+        throw new Error('Payload inválido')
       }
-      // Se estamos iniciando o processo de autenticação
-      else if (ctx.request.url().includes('/auth/google')) {
-        console.log('Iniciando processo de autenticação com Google')
-        const url = client.generateAuthUrl({
-          access_type: 'offline',
-          scope: ['profile', 'email']
+
+      // Procura ou cria usuário
+      console.log('🔍 Buscando usuário:', payload.email)
+      let user = await User.findBy('email', payload.email)
+      
+      if (!user) {
+        console.log('➕ Criando novo usuário')
+        user = await User.create({
+          email: payload.email,
+          name: payload.name || payload.email.split('@')[0],
+          googleId: payload.sub,
+          avatar: payload.picture,
+          role: 'user'
         })
-        console.log('URL de autorização gerada:', url)
-        return ctx.response.redirect(url)
+        console.log('✅ Novo usuário criado:', user.id)
+      } else {
+        console.log('✅ Usuário existente encontrado:', user.id)
       }
-      // Se estamos em uma rota protegida
-      else {
-        const user = ctx.session.get('user')
-        if (!user) {
-          return ctx.response.redirect('/login')
-        }
 
-        // Verifica se é a rota do dashboard
-        if (ctx.request.url() === '/dashboard') {
-          // Busca o usuário no banco para verificar a role
-          const dbUser = await User.findBy('email', user.email)
-          
-          if (!dbUser || dbUser.role !== 'admin') {
-            ctx.session.flash('error', 'Acesso restrito a administradores')
-            return ctx.response.redirect('/home')
-          }
-        }
+      // Limpa sessão antiga e cria nova
+      await ctx.session.clear()
+      await ctx.session.put('user', {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        avatar: user.avatar,
+        role: user.role
+      })
 
-        await next()
-      }
+      // Força gravação da sessão
+      await ctx.session.commit()
+      console.log('💾 Sessão atualizada')
+
+      // Redireciona baseado na role
+      const redirectUrl = user.role === 'admin' ? '/dashboard' : '/home'
+      console.log('➡️ Redirecionando para:', redirectUrl)
+      return ctx.response.redirect(redirectUrl)
     } catch (error) {
-      console.error('Erro no middleware:', error)
-      return ctx.response.redirect('/login?error=Authentication failed')
+      console.error('❌ Erro ao processar callback:', error)
+      return ctx.response.redirect('/login?error=token_processing')
+    }
+  }
+
+  private async handleAuth(ctx: HttpContextContract) {
+    try {
+      console.log('🔄 Gerando URL de autenticação...')
+      const url = this.client.generateAuthUrl({
+        access_type: 'offline',
+        scope: ['profile', 'email'],
+        response_type: 'code',
+        state: Math.random().toString(36).substring(7)
+      })
+      console.log('🔗 URL gerada:', url)
+      return ctx.response.redirect(url)
+    } catch (error) {
+      console.error('❌ Erro ao gerar URL de autenticação:', error)
+      return ctx.response.redirect('/login?error=auth_failed')
     }
   }
 }
