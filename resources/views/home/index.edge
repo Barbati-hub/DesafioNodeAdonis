@@ -1,59 +1,131 @@
-@layout('layouts/public')
+@layout('layouts/main')
 
 @section('title')
 Loja Virtual - Produtos
 @endsection
 
 @section('content')
-  @include('home/header')
-
-  <main class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">Nossos Produtos</h1>
-    
-    <!-- Grid de Produtos -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      @each(produto in produtos)
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+<!-- Grid de Produtos -->
+<div class="container mx-auto px-4 mb-12 mt-8">
+  <div class="bg-white rounded-lg shadow-lg p-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      @if(produtos && produtos.length > 0)
+        @each(produto in produtos)
+        <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 relative group">
           <!-- Imagem do Produto -->
-          <div class="h-48 overflow-hidden">
-            @if(produto.imagemUrl)
-              <img src="{{ produto.imagemUrl }}" alt="{{ produto.nome }}" class="w-full h-full object-cover" />
+          <div class="relative aspect-square overflow-hidden rounded-t-lg">
+            @if(produto.imagem_url)
+              <img src="{{ produto.imagem_url }}" alt="{{ produto.nome }}" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300">
             @else
-              <div class="w-full h-full bg-gray-200 flex items-center justify-center text-gray-500">
-                Sem imagem
+              <div class="w-full h-full bg-gray-200 flex items-center justify-center">
+                <i class="fas fa-image text-gray-400 text-4xl"></i>
               </div>
             @endif
           </div>
           
+          <!-- Informações do Produto -->
           <div class="p-4">
-            <h3 class="text-xl font-semibold mb-2">{{ produto.nome }}</h3>
-            <p class="text-gray-600 mb-2">{{ produto.descricao }}</p>
-            <div class="flex justify-between items-center">
-              <span class="text-2xl font-bold text-green-600">R$ {{ Number(produto.preco).toFixed(2) }}</span>
-              <div class="space-x-2">
-                <button 
-                  onclick="showDetails('{{ produto.id }}')"
-                  class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
-                  <i class="fas fa-info-circle"></i>
-                  Detalhes
-                </button>
-                <button 
-                  onclick="handleCompra('{{ produto.id }}')"
-                  class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors">
-                  <i class="fas fa-shopping-cart"></i>
-                  Comprar
-                </button>
+            <h3 class="text-sm text-gray-600 mb-2 line-clamp-2 h-10">{{ produto.nome }}</h3>
+            
+            <!-- Preços -->
+            <div class="mb-3">
+              <div class="text-[#FF6500] font-bold text-xl">
+                R$ {{ Number(produto.preco).toFixed(2) }}
               </div>
+              <div class="text-sm text-gray-600">
+                Em até 12x de R$ {{ (Number(produto.preco)/12).toFixed(2) }}
+              </div>
+            </div>
+            
+            <!-- Status de Estoque -->
+            <div class="mb-4">
+              @if(produto.quantidade > 0)
+              <span class="text-green-500 text-sm flex items-center">
+                <i class="fas fa-check-circle mr-1"></i> Em estoque
+              </span>
+              @else
+              <span class="text-red-500 text-sm flex items-center">
+                <i class="fas fa-times-circle mr-1"></i> Fora de estoque
+              </span>
+              @endif
+            </div>
+            
+            <!-- Botões -->
+            <div class="space-y-2">
+              <button onclick="showProductDetails({{ produto.id }})" 
+                      class="w-full bg-gray-100 hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 rounded-md transition-colors">
+                Ver Detalhes
+              </button>
+              @if(produto.quantidade > 0)
+              <button onclick="addToCart({{ produto.id }})"
+                      class="w-full bg-[#FF6500] hover:bg-[#e65c00] text-white font-semibold py-2 px-4 rounded-md transition-colors">
+                Comprar
+              </button>
+              @endif
             </div>
           </div>
         </div>
-      @end
+        @endeach
+      @else
+        <div class="col-span-full text-center py-8 text-gray-500">
+          <i class="fas fa-box-open text-4xl mb-4"></i>
+          <p>Nenhum produto cadastrado.</p>
+        </div>
+      @endif
     </div>
-  </main>
+  </div>
+</div>
 
-  @include('home/cartModal')
-  @include('home/detailsModal')
-@endsection
+<!-- Toast de Notificação -->
+<div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg transform translate-y-full opacity-0 transition-all duration-300">
+  <div class="flex items-center">
+    <i class="fas fa-check-circle mr-2"></i>
+    <span id="toastMessage"></span>
+  </div>
+</div>
+
+<script>
+// Carrinho de Compras
+let cartCount = 0;
+
+function addToCart(productId) {
+  cartCount++;
+  updateCartCount();
+  showToast('Produto adicionado ao carrinho!');
+}
+
+function updateCartCount() {
+  const cartCountElement = document.getElementById('cartCount');
+  if (cartCountElement) {
+    cartCountElement.textContent = cartCount;
+    cartCountElement.classList.remove('hidden');
+  }
+}
+
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  const toastMessage = document.getElementById('toastMessage');
+  
+  toastMessage.textContent = message;
+  toast.classList.remove('translate-y-full', 'opacity-0');
+  
+  setTimeout(() => {
+    toast.classList.add('translate-y-full', 'opacity-0');
+  }, 3000);
+}
+
+// Modal de Detalhes do Produto
+function showProductDetails(productId) {
+  fetch(`/api/produtos/${productId}`)
+    .then(response => response.json())
+    .then(produto => {
+      // Aqui você pode implementar a lógica para mostrar o modal com os detalhes do produto
+      console.log('Detalhes do produto:', produto);
+    })
+    .catch(error => console.error('Erro ao carregar detalhes do produto:', error));
+}
+</script>
+@end
 
 @section('scripts')
   @include('home/scripts')

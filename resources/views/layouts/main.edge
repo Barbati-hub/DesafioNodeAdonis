@@ -3,10 +3,75 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistema de Login</title>
+  <title>Desafio Node - @!section('title')</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .header-top {
+      background-color: #FF6500;
+    }
+  </style>
 </head>
-<body class="bg-gray-100">
-  @!section('content')
+<body class="min-h-screen flex flex-col">
+  <!-- Header -->
+  <header>
+    <!-- Top Bar -->
+    <div class="header-top text-white py-2">
+      <div class="container mx-auto px-4">
+        <div class="flex justify-between items-center">
+          <div class="flex items-center space-x-4">
+            <a href="/" class="font-bold text-2xl">Desafio Node</a>
+            <div class="relative flex-1 max-w-xl">
+              <input type="text" 
+                     placeholder="Busque aqui seu produto" 
+                     class="w-full pl-4 pr-10 py-2 rounded-md text-gray-800 focus:outline-none">
+              <button class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </div>
+          <div class="flex items-center space-x-6">
+            @if(auth.user)
+              <div class="flex items-center space-x-2">
+                <img src="{{ auth.user.avatar || '/default-avatar.png' }}" 
+                     alt="Avatar" 
+                     class="w-8 h-8 rounded-full">
+                <span>{{ auth.user.name }}</span>
+              </div>
+              <a href="/logout" class="hover:underline">
+                <i class="fas fa-sign-out-alt mr-1"></i>
+                Sair
+              </a>
+            @else
+              <a href="/login" class="hover:underline">
+                <i class="fas fa-user mr-1"></i>
+                Entrar
+              </a>
+            @endif
+            <a href="/carrinho" class="relative">
+              <i class="fas fa-shopping-cart text-xl"></i>
+              <span id="cartCount" class="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-grow">
+    @!section('content')
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-6">
+    <div class="container mx-auto px-4">
+      <div class="text-center text-gray-400">
+        <p>&copy; 2025 Torne-se Programador! Clone - Projeto desenvolvido para fins educacionais</p>
+      </div>
+    </div>
+  </footer>
+
+  @!section('scripts')
 </body>
 </html> 

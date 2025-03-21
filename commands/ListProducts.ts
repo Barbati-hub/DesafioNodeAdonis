@@ -25,6 +25,7 @@ export default class ListProducts extends BaseCommand {
         this.logger.info(`Descrição: ${produto.descricao}`)
         this.logger.info(`Preço: R$ ${Number(produto.preco).toFixed(2)}`)
         this.logger.info(`Quantidade: ${produto.quantidade}`)
+        this.logger.info(`Imagem URL: ${produto.imagem_url || 'Sem imagem'}`)
         this.logger.info('-------------------')
       })
     } catch (error) {

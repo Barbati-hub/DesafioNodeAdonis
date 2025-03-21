@@ -4,10 +4,9 @@ import User from 'App/Models/User'
 import Produto from 'App/Models/Produto'
 
 // Página inicial mostra os produtos
-Route.get('/', async ({ view, session }) => {
+Route.get('/', async ({ view }) => {
   const produtos = await Produto.all()
-  const user = session.get('user')
-  return view.render('home.index', { produtos, user })
+  return view.render('home.index', { produtos })
 })
 
 // Rotas de autenticação
@@ -30,24 +29,16 @@ Route.get('/logout', 'AuthController.logout')
 // Rotas protegidas
 Route.group(() => {
   // Dashboard (apenas admin)
-  Route.get('/dashboard', async ({ view, session }) => {
-    const user = session.get('user')
-    return view.render('dashboard', { user })
+  Route.get('/dashboard', async ({ view }) => {
+    return view.render('dashboard')
   })
 
   // Home (usuários autenticados)
-  Route.get('/home', async ({ view, session }) => {
-    const user = session.get('user')
+  Route.get('/home', async ({ view }) => {
     const produtos = await Produto.all()
-    return view.render('home.index', { produtos, user })
+    return view.render('home.index', { produtos })
   })
 }).middleware('googleAuth')
-
-// Outras páginas (acessíveis sem login)
-Route.get('/usuarios', async ({ view }) => view.render('usuarios/index'))
-Route.get('/usuarios/novo', async ({ view }) => view.render('usuarios/novo'))
-Route.get('/relatorios', async ({ view }) => view.render('relatorios'))
-Route.get('/configuracoes', async ({ view }) => view.render('configuracoes'))
 
 // API para obter detalhes do produto em JSON
 Route.get('/api/produtos/:id', async ({ params, response }) => {

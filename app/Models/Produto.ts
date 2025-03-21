@@ -16,7 +16,6 @@ export default class Produto extends BaseModel {
   @column()
   public quantidade: number
 
-  // Mapeando a coluna 'imagem_url'
-  @column({ columnName: 'imagem_url' })
-  public imagemUrl?: string
+  @column()
+  public imagem_url?: string
 }
