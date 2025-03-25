@@ -1,0 +1,147 @@
+@layout('layouts/main')
+
+@section('content')
+<div class="container mx-auto px-4 py-8">
+  <h1 class="text-2xl font-bold mb-6">Carrinho de Compras</h1>
+
+  @if(itens.length > 0)
+    <div class="bg-white rounded-lg shadow-lg p-6">
+      <!-- Lista de Itens -->
+      <div class="divide-y divide-gray-200">
+        @each(item in itens)
+          <div class="py-6 flex items-center">
+            <!-- Imagem do Produto -->
+            <div class="flex-shrink-0 w-24 h-24">
+              @if(item.produto.imagem_url)
+                <img src="{{ item.produto.imagem_url }}" alt="{{ item.produto.nome }}" class="w-full h-full object-cover rounded-lg">
+              @else
+                <div class="w-full h-full bg-gray-200 rounded-lg flex items-center justify-center">
+                  <i class="fas fa-image text-gray-400 text-2xl"></i>
+                </div>
+              @endif
+            </div>
+
+            <!-- Informações do Produto -->
+            <div class="ml-6 flex-1">
+              <h3 class="text-lg font-medium text-gray-900">{{ item.produto.nome }}</h3>
+              <p class="mt-1 text-sm text-gray-500">{{ item.produto.descricao }}</p>
+              <div class="mt-2 flex items-center">
+                <span class="text-gray-600 mr-4">Quantidade:</span>
+                <div class="flex items-center border rounded-md">
+                  <button onclick="atualizarQuantidade({{ item.produto.id }}, {{ item.quantidade - 1 }})" 
+                          class="px-3 py-1 text-gray-600 hover:bg-gray-100">
+                    -
+                  </button>
+                  <span class="px-3 py-1 border-x">{{ item.quantidade }}</span>
+                  <button onclick="atualizarQuantidade({{ item.produto.id }}, {{ item.quantidade + 1 }})"
+                          class="px-3 py-1 text-gray-600 hover:bg-gray-100">
+                    +
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Preço e Ações -->
+            <div class="ml-6">
+              <p class="text-lg font-medium text-[#FF6500]">{{ item.subtotalFormatado }}</p>
+              <button onclick="removerItem({{ item.produto.id }})" 
+                      class="mt-2 text-sm text-red-600 hover:text-red-800">
+                Remover
+              </button>
+            </div>
+          </div>
+        @end
+      </div>
+
+      <!-- Total e Checkout -->
+      <div class="mt-8 border-t pt-8">
+        <div class="flex justify-between items-center">
+          <span class="text-xl font-medium">Total:</span>
+          <span class="text-2xl font-bold text-[#FF6500]">{{ totalFormatado }}</span>
+        </div>
+        <button onclick="finalizarCompra()"
+                class="mt-6 w-full bg-[#FF6500] text-white py-3 px-4 rounded-md hover:bg-[#e65c00] transition-colors">
+          Finalizar Compra
+        </button>
+      </div>
+    </div>
+  @else
+    <div class="bg-white rounded-lg shadow-lg p-8 text-center">
+      <i class="fas fa-shopping-cart text-gray-400 text-5xl mb-4"></i>
+      <p class="text-xl text-gray-600">Seu carrinho está vazio</p>
+      <a href="/" class="mt-4 inline-block bg-[#FF6500] text-white py-2 px-4 rounded-md hover:bg-[#e65c00] transition-colors">
+        Continuar Comprando
+      </a>
+    </div>
+  @endif
+</div>
+
+<!-- Toast de Notificação -->
+<div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg transform translate-y-full opacity-0 transition-all duration-300">
+  <div class="flex items-center">
+    <i class="fas fa-check-circle mr-2"></i>
+    <span id="toastMessage"></span>
+  </div>
+</div>
+
+@end
+
+@section('scripts')
+<script>
+function atualizarQuantidade(produtoId, quantidade) {
+  fetch('/carrinho/atualizar', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ produtoId, quantidade })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.error) {
+      showToast(data.error, 'error')
+    } else {
+      location.reload()
+    }
+  })
+  .catch(error => {
+    console.error('Erro:', error)
+    showToast('Erro ao atualizar quantidade', 'error')
+  })
+}
+
+function removerItem(produtoId) {
+  fetch(`/carrinho/remover/${produtoId}`, {
+    method: 'DELETE'
+  })
+  .then(response => response.json())
+  .then(data => {
+    location.reload()
+  })
+  .catch(error => {
+    console.error('Erro:', error)
+    showToast('Erro ao remover item', 'error')
+  })
+}
+
+function finalizarCompra() {
+  // Implementar a finalização da compra
+  alert('Funcionalidade em desenvolvimento')
+}
+
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('toast')
+  const toastMessage = document.getElementById('toastMessage')
+  
+  toast.classList.remove('translate-y-full', 'opacity-0')
+  toast.classList.remove('bg-green-500', 'bg-red-500')
+  toast.classList.add(type === 'success' ? 'bg-green-500' : 'bg-red-500')
+  
+  toastMessage.textContent = message
+  
+  setTimeout(() => {
+    toast.classList.add('translate-y-full', 'opacity-0')
+  }, 3000)
+}
+</script>
+@end 

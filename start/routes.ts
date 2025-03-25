@@ -18,6 +18,10 @@ Route.get('/login', async ({ view, session, response }) => {
   return view.render('welcome')
 })
 
+// Rotas de registro de cliente
+Route.get('/register', 'ClientesController.create')
+Route.post('/register', 'ClientesController.store')
+
 Route.get('/auth/google', async ({ response }) => {
   return response.redirect().toPath('/auth/google/redirect')
 })

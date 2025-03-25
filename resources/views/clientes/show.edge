@@ -1,0 +1,83 @@
+@layout('layouts/main')
+
+@section('content')
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-2xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold text-gray-800">Detalhes do Cliente</h1>
+      <div class="space-x-2">
+        <a href="{{ route('clientes.edit', { id: cliente.id }) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg">
+          <i class="fas fa-edit"></i> Editar
+        </a>
+        <a href="{{ route('clientes.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
+          <i class="fas fa-arrow-left"></i> Voltar
+        </a>
+      </div>
+    </div>
+
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      <div class="mb-4">
+        <h2 class="text-lg font-semibold text-gray-700 mb-2">Informações Pessoais</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-1">Nome</label>
+            <p class="text-gray-900">{{ cliente.nome }}</p>
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-1">WhatsApp</label>
+            <p class="text-gray-900">{{ cliente.whatsapp }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <h2 class="text-lg font-semibold text-gray-700 mb-2">Endereço</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="col-span-2">
+            <label class="block text-gray-700 text-sm font-bold mb-1">CEP</label>
+            <p class="text-gray-900">{{ cliente.cep || '-' }}</p>
+          </div>
+          <div class="col-span-2">
+            <label class="block text-gray-700 text-sm font-bold mb-1">Logradouro</label>
+            <p class="text-gray-900">{{ cliente.logradouro || '-' }}</p>
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-1">Número</label>
+            <p class="text-gray-900">{{ cliente.numero || '-' }}</p>
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-1">Complemento</label>
+            <p class="text-gray-900">{{ cliente.complemento || '-' }}</p>
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-1">Bairro</label>
+            <p class="text-gray-900">{{ cliente.bairro || '-' }}</p>
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-1">Cidade</label>
+            <p class="text-gray-900">{{ cliente.cidade || '-' }}</p>
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-1">Estado</label>
+            <p class="text-gray-900">{{ cliente.estado || '-' }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <h2 class="text-lg font-semibold text-gray-700 mb-2">Informações Adicionais</h2>
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-1">Data de Cadastro</label>
+            <p class="text-gray-900">{{ cliente.createdAt.toFormat('dd/MM/yyyy HH:mm') }}</p>
+          </div>
+          <div>
+            <label class="block text-gray-700 text-sm font-bold mb-1">Última Atualização</label>
+            <p class="text-gray-900">{{ cliente.updatedAt.toFormat('dd/MM/yyyy HH:mm') }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+@end 

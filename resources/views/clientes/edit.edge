@@ -1,0 +1,172 @@
+@layout('layouts/main')
+
+@section('content')
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-2xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold text-gray-800">Editar Cliente</h1>
+      <a href="{{ route('clientes.index') }}" class="text-gray-600 hover:text-gray-900">
+        <i class="fas fa-arrow-left"></i> Voltar
+      </a>
+    </div>
+
+    @if(flashMessages.has('errors'))
+      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+        <ul class="list-disc list-inside">
+          @each(error in flashMessages.get('errors'))
+            <li>{{ error }}</li>
+          @end
+        </ul>
+      </div>
+    @endif
+
+    <form action="{{ route('clientes.update', { id: cliente.id }) }}" method="POST" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+      @csrfField()
+      @method('PUT')
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="nome">
+          Nome *
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @if(flashMessages.has('errors.nome')) border-red-500 @endif"
+          id="nome"
+          type="text"
+          name="nome"
+          value="{{ flashMessages.get('old.nome', cliente.nome) }}"
+          required>
+        @if(flashMessages.has('errors.nome'))
+          <p class="text-red-500 text-xs italic">{{ flashMessages.get('errors.nome') }}</p>
+        @endif
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="whatsapp">
+          WhatsApp *
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @if(flashMessages.has('errors.whatsapp')) border-red-500 @endif"
+          id="whatsapp"
+          type="text"
+          name="whatsapp"
+          value="{{ flashMessages.get('old.whatsapp', cliente.whatsapp) }}"
+          required>
+        @if(flashMessages.has('errors.whatsapp'))
+          <p class="text-red-500 text-xs italic">{{ flashMessages.get('errors.whatsapp') }}</p>
+        @endif
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="cep">
+          CEP
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @if(flashMessages.has('errors.cep')) border-red-500 @endif"
+          id="cep"
+          type="text"
+          name="cep"
+          value="{{ flashMessages.get('old.cep', cliente.cep) }}">
+        @if(flashMessages.has('errors.cep'))
+          <p class="text-red-500 text-xs italic">{{ flashMessages.get('errors.cep') }}</p>
+        @endif
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="logradouro">
+          Logradouro
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @if(flashMessages.has('errors.logradouro')) border-red-500 @endif"
+          id="logradouro"
+          type="text"
+          name="logradouro"
+          value="{{ flashMessages.get('old.logradouro', cliente.logradouro) }}">
+        @if(flashMessages.has('errors.logradouro'))
+          <p class="text-red-500 text-xs italic">{{ flashMessages.get('errors.logradouro') }}</p>
+        @endif
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="numero">
+          Número
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @if(flashMessages.has('errors.numero')) border-red-500 @endif"
+          id="numero"
+          type="text"
+          name="numero"
+          value="{{ flashMessages.get('old.numero', cliente.numero) }}">
+        @if(flashMessages.has('errors.numero'))
+          <p class="text-red-500 text-xs italic">{{ flashMessages.get('errors.numero') }}</p>
+        @endif
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="complemento">
+          Complemento
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @if(flashMessages.has('errors.complemento')) border-red-500 @endif"
+          id="complemento"
+          type="text"
+          name="complemento"
+          value="{{ flashMessages.get('old.complemento', cliente.complemento) }}">
+        @if(flashMessages.has('errors.complemento'))
+          <p class="text-red-500 text-xs italic">{{ flashMessages.get('errors.complemento') }}</p>
+        @endif
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="bairro">
+          Bairro
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @if(flashMessages.has('errors.bairro')) border-red-500 @endif"
+          id="bairro"
+          type="text"
+          name="bairro"
+          value="{{ flashMessages.get('old.bairro', cliente.bairro) }}">
+        @if(flashMessages.has('errors.bairro'))
+          <p class="text-red-500 text-xs italic">{{ flashMessages.get('errors.bairro') }}</p>
+        @endif
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="cidade">
+          Cidade
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @if(flashMessages.has('errors.cidade')) border-red-500 @endif"
+          id="cidade"
+          type="text"
+          name="cidade"
+          value="{{ flashMessages.get('old.cidade', cliente.cidade) }}">
+        @if(flashMessages.has('errors.cidade'))
+          <p class="text-red-500 text-xs italic">{{ flashMessages.get('errors.cidade') }}</p>
+        @endif
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="estado">
+          Estado
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline @if(flashMessages.has('errors.estado')) border-red-500 @endif"
+          id="estado"
+          type="text"
+          name="estado"
+          value="{{ flashMessages.get('old.estado', cliente.estado) }}">
+        @if(flashMessages.has('errors.estado'))
+          <p class="text-red-500 text-xs italic">{{ flashMessages.get('errors.estado') }}</p>
+        @endif
+      </div>
+
+      <div class="flex items-center justify-end">
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">
+          Atualizar
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+@push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script>
+  $(document).ready(function(){
+    $('#whatsapp').mask('(00) 00000-0000');
+    $('#cep').mask('00000-000');
+  });
+</script>
+@end 

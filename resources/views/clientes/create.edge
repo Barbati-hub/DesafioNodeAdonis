@@ -1,0 +1,154 @@
+@layout('layouts/main')
+
+@section('content')
+<div class="container mx-auto px-4 py-8">
+  <div class="max-w-2xl mx-auto">
+    <div class="bg-white shadow-md rounded-lg p-8">
+      <h1 class="text-2xl font-bold text-[#FF6500] mb-6">Cadastro de Cliente</h1>
+
+      @if(flashMessages.has('errors'))
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+          <ul class="list-disc list-inside">
+            @each(error in flashMessages.get('errors'))
+              <li>{{ error }}</li>
+            @end
+          </ul>
+        </div>
+      @endif
+
+      <form action="{{ route('clientes.store') }}" method="POST" class="space-y-6">
+        @csrf
+
+        <!-- Nome -->
+        <div>
+          <label for="nome" class="block text-sm font-medium text-gray-700 mb-1">Nome *</label>
+          <input type="text" 
+                 id="nome" 
+                 name="nome" 
+                 required 
+                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6500]"
+                 value="{{ flashMessages.get('nome') || '' }}">
+        </div>
+
+        <!-- WhatsApp -->
+        <div>
+          <label for="whatsapp" class="block text-sm font-medium text-gray-700 mb-1">WhatsApp *</label>
+          <input type="text" 
+                 id="whatsapp" 
+                 name="whatsapp" 
+                 required 
+                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6500]"
+                 value="{{ flashMessages.get('whatsapp') || '' }}">
+        </div>
+
+        <!-- CEP -->
+        <div>
+          <label for="cep" class="block text-sm font-medium text-gray-700 mb-1">CEP</label>
+          <input type="text" 
+                 id="cep" 
+                 name="cep" 
+                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6500]"
+                 value="{{ flashMessages.get('cep') || '' }}">
+        </div>
+
+        <!-- Logradouro -->
+        <div>
+          <label for="logradouro" class="block text-sm font-medium text-gray-700 mb-1">Logradouro</label>
+          <input type="text" 
+                 id="logradouro" 
+                 name="logradouro" 
+                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6500]"
+                 value="{{ flashMessages.get('logradouro') || '' }}">
+        </div>
+
+        <!-- Número -->
+        <div>
+          <label for="numero" class="block text-sm font-medium text-gray-700 mb-1">Número</label>
+          <input type="text" 
+                 id="numero" 
+                 name="numero" 
+                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6500]"
+                 value="{{ flashMessages.get('numero') || '' }}">
+        </div>
+
+        <!-- Complemento -->
+        <div>
+          <label for="complemento" class="block text-sm font-medium text-gray-700 mb-1">Complemento</label>
+          <input type="text" 
+                 id="complemento" 
+                 name="complemento" 
+                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6500]"
+                 value="{{ flashMessages.get('complemento') || '' }}">
+        </div>
+
+        <!-- Bairro -->
+        <div>
+          <label for="bairro" class="block text-sm font-medium text-gray-700 mb-1">Bairro</label>
+          <input type="text" 
+                 id="bairro" 
+                 name="bairro" 
+                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6500]"
+                 value="{{ flashMessages.get('bairro') || '' }}">
+        </div>
+
+        <!-- Cidade -->
+        <div>
+          <label for="cidade" class="block text-sm font-medium text-gray-700 mb-1">Cidade</label>
+          <input type="text" 
+                 id="cidade" 
+                 name="cidade" 
+                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6500]"
+                 value="{{ flashMessages.get('cidade') || '' }}">
+        </div>
+
+        <!-- Estado -->
+        <div>
+          <label for="estado" class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+          <input type="text" 
+                 id="estado" 
+                 name="estado" 
+                 maxlength="2" 
+                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#FF6500]"
+                 value="{{ flashMessages.get('estado') || '' }}">
+        </div>
+
+        <div class="flex justify-end space-x-4">
+          <a href="/" class="px-4 py-2 text-gray-600 hover:text-gray-800">
+            Cancelar
+          </a>
+          <button type="submit" class="px-6 py-2 bg-[#FF6500] text-white rounded-md hover:bg-[#e65c00] focus:outline-none focus:ring-2 focus:ring-[#FF6500]">
+            Cadastrar
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+@push('scripts')
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script>
+$(document).ready(function(){
+  $('#whatsapp').mask('(00) 00000-0000');
+  $('#cep').mask('00000-000');
+
+  // Busca endereço pelo CEP
+  $('#cep').blur(function(){
+    const cep = $(this).val().replace(/\D/g, '');
+    if(cep.length === 8){
+      $.get(`https://viacep.com.br/ws/${cep}/json/`)
+        .done(function(data) {
+          if (!data.erro) {
+            $('#logradouro').val(data.logradouro);
+            $('#bairro').val(data.bairro);
+            $('#cidade').val(data.localidade);
+            $('#estado').val(data.uf);
+            $('#numero').focus();
+          }
+        });
+    }
+  });
+});
+</script>
+@end 
