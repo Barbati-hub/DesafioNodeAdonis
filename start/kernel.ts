@@ -22,7 +22,7 @@ import Server from '@ioc:Adonis/Core/Server'
 */
 Server.middleware.register([
   () => import('@ioc:Adonis/Core/BodyParser'),
-  () => import('App/Middleware/ShareAuth'),
+  () => import('@ioc:Adonis/Addons/Shield')
 ])
 
 /*
@@ -43,6 +43,7 @@ Server.middleware.register([
 */
 Server.middleware.registerNamed({
   googleAuth: () => import('App/Middleware/GoogleAuth'),
+  auth: () => import('App/Middleware/Auth')
 })
 
 const providers = [

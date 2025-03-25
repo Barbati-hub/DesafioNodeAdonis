@@ -77,19 +77,13 @@ export const csrf: ShieldConfig['csrf'] = {
 
   /*
   |--------------------------------------------------------------------------
-  | Routes to Ignore
+  | Routes to Exclude
   |--------------------------------------------------------------------------
   |
-  | Define an array of route patterns that you want to ignore from CSRF
-  | validation. Make sure the route patterns are started with a leading
-  | slash. Example:
+  | Define an array of route patterns that you want to exclude from CSRF
+  | protection.
   |
-  | `/foo/bar`
-	|
-	| Also you can define a function that is evaluated on every HTTP Request.
-	| ```
-	|  exceptRoutes: ({ request }) => request.url().includes('/api')
-	| ```
+  | Example: /api/v1/auth/* or /api/*
   |
   */
   exceptRoutes: [],
@@ -101,11 +95,10 @@ export const csrf: ShieldConfig['csrf'] = {
   |
   | When the following flag is enabled, AdonisJS will drop `XSRF-TOKEN`
   | cookie that frontend frameworks can read and return back as a
-  | `X-XSRF-TOKEN` header.
+  | `X-CSRF-TOKEN` header.
   |
-  | The cookie has `httpOnly` flag set to false, so it is little insecure and
-  | can be turned off when you are not using a frontend framework making
-  | AJAX requests.
+  | The cookie has `httpOnly` flag set to false, so it is readable by
+  | the client side scripts.
   |
   */
   enableXsrfCookie: true,
@@ -115,10 +108,40 @@ export const csrf: ShieldConfig['csrf'] = {
   | Methods to Validate
   |--------------------------------------------------------------------------
   |
-  | Define an array of HTTP methods to be validated for a valid CSRF token.
+  | Define an array of HTTP methods to validate CSRF token for.
   |
   */
-  methods: ['POST', 'PUT', 'PATCH', 'DELETE'],
+  methods: ['POST', 'PUT', 'DELETE', 'PATCH'],
+
+  /*
+  |--------------------------------------------------------------------------
+  | Token Config
+  |--------------------------------------------------------------------------
+  |
+  | Configure the cookie and header names for the CSRF token
+  |
+  */
+  tokenProvider: {
+    type: 'SessionProvider',
+    driver: 'cookie',
+    key: 'XSRF-TOKEN',
+    lifetime: 7200
+  },
+
+  /*
+  |--------------------------------------------------------------------------
+  | Cookie Config
+  |--------------------------------------------------------------------------
+  |
+  | Configure the cookie that will be used to store CSRF token
+  |
+  */
+  cookieOptions: {
+    httpOnly: false,
+    sameSite: 'lax',
+    path: '/',
+    secure: false
+  }
 }
 
 /*
@@ -192,8 +215,8 @@ export const hsts: ShieldConfig['hsts'] = {
   | Max Age
   |--------------------------------------------------------------------------
   |
-  | Control, how long the browser should remember that a site is only to be
-  | accessed using HTTPS.
+  | Define maximum number of days for the browser to remember that a site
+  | should only be accessed using HTTPS.
   |
   */
   maxAge: '180 days',
@@ -210,7 +233,7 @@ export const hsts: ShieldConfig['hsts'] = {
 
   /*
   |--------------------------------------------------------------------------
-  | Preloading
+  | Preload
   |--------------------------------------------------------------------------
   |
   | Google maintains a service to register your domain and it will preload

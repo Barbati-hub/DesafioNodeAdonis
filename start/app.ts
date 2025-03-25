@@ -9,3 +9,12 @@ export default class AppProvider {
     const View = this.app.container.use('Adonis/Core/View')
   }
 }
+
+export const providers = [
+  '@adonisjs/core',
+  '@adonisjs/session',
+  '@adonisjs/view',
+  '@adonisjs/shield',
+  '@adonisjs/lucid',
+  '@adonisjs/view/providers/ViewProvider'
+]

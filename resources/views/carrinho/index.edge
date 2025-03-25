@@ -1,17 +1,21 @@
 @layout('layouts/main')
 
+@section('title')
+Carrinho de Compras
+@endsection
+
 @section('content')
 <div class="container mx-auto px-4 py-8">
-  <h1 class="text-2xl font-bold mb-6">Carrinho de Compras</h1>
+  <h1 class="text-2xl font-bold mb-8">Carrinho de Compras</h1>
 
-  @if(itens.length > 0)
+  @if(itens && itens.length > 0)
     <div class="bg-white rounded-lg shadow-lg p-6">
-      <!-- Lista de Itens -->
-      <div class="divide-y divide-gray-200">
+      <!-- Lista de Produtos -->
+      <div class="space-y-6">
         @each(item in itens)
-          <div class="py-6 flex items-center">
+          <div class="flex items-center space-x-4 py-4 border-b last:border-b-0">
             <!-- Imagem do Produto -->
-            <div class="flex-shrink-0 w-24 h-24">
+            <div class="w-24 h-24 flex-shrink-0">
               @if(item.produto.imagem_url)
                 <img src="{{ item.produto.imagem_url }}" alt="{{ item.produto.nome }}" class="w-full h-full object-cover rounded-lg">
               @else
@@ -22,55 +26,61 @@
             </div>
 
             <!-- Informações do Produto -->
-            <div class="ml-6 flex-1">
-              <h3 class="text-lg font-medium text-gray-900">{{ item.produto.nome }}</h3>
-              <p class="mt-1 text-sm text-gray-500">{{ item.produto.descricao }}</p>
-              <div class="mt-2 flex items-center">
-                <span class="text-gray-600 mr-4">Quantidade:</span>
-                <div class="flex items-center border rounded-md">
-                  <button onclick="atualizarQuantidade({{ item.produto.id }}, {{ item.quantidade - 1 }})" 
-                          class="px-3 py-1 text-gray-600 hover:bg-gray-100">
-                    -
-                  </button>
-                  <span class="px-3 py-1 border-x">{{ item.quantidade }}</span>
-                  <button onclick="atualizarQuantidade({{ item.produto.id }}, {{ item.quantidade + 1 }})"
-                          class="px-3 py-1 text-gray-600 hover:bg-gray-100">
-                    +
-                  </button>
-                </div>
-              </div>
+            <div class="flex-grow">
+              <h3 class="text-lg font-semibold">{{ item.produto.nome }}</h3>
+              <p class="text-gray-600">Preço unitário: {{ item.produto.preco.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</p>
             </div>
 
-            <!-- Preço e Ações -->
-            <div class="ml-6">
-              <p class="text-lg font-medium text-[#FF6500]">{{ item.subtotalFormatado }}</p>
-              <button onclick="removerItem({{ item.produto.id }})" 
-                      class="mt-2 text-sm text-red-600 hover:text-red-800">
-                Remover
+            <!-- Controles de Quantidade -->
+            <div class="flex items-center space-x-2">
+              <button onclick="updateQuantity({{ item.produto.id }}, {{ item.quantidade - 1 }})" 
+                      class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center">
+                <i class="fas fa-minus"></i>
+              </button>
+              <span class="w-12 text-center">{{ item.quantidade }}</span>
+              <button onclick="updateQuantity({{ item.produto.id }}, {{ item.quantidade + 1 }})"
+                      class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center">
+                <i class="fas fa-plus"></i>
               </button>
             </div>
+
+            <!-- Subtotal -->
+            <div class="w-32 text-right">
+              <p class="font-semibold">{{ item.subtotalFormatado }}</p>
+            </div>
+
+            <!-- Botão Remover -->
+            <button onclick="removeFromCart({{ item.produto.id }})" 
+                    class="text-red-500 hover:text-red-700">
+              <i class="fas fa-trash"></i>
+            </button>
           </div>
-        @end
+        @endeach
       </div>
 
-      <!-- Total e Checkout -->
-      <div class="mt-8 border-t pt-8">
-        <div class="flex justify-between items-center">
-          <span class="text-xl font-medium">Total:</span>
-          <span class="text-2xl font-bold text-[#FF6500]">{{ totalFormatado }}</span>
+      <!-- Total e Botões -->
+      <div class="mt-8 flex justify-between items-center">
+        <div class="text-xl font-bold">
+          Total: {{ totalFormatado }}
         </div>
-        <button onclick="finalizarCompra()"
-                class="mt-6 w-full bg-[#FF6500] text-white py-3 px-4 rounded-md hover:bg-[#e65c00] transition-colors">
-          Finalizar Compra
-        </button>
+        <div class="space-x-4">
+          <a href="/" class="inline-block px-6 py-3 bg-gray-200 hover:bg-gray-300 rounded-lg text-gray-800">
+            Continuar Comprando
+          </a>
+          <button onclick="finalizarCompra()" 
+                  class="px-6 py-3 bg-[#FF6500] hover:bg-[#e65c00] text-white rounded-lg">
+            Finalizar Compra
+          </button>
+        </div>
       </div>
     </div>
   @else
+    <!-- Carrinho Vazio -->
     <div class="bg-white rounded-lg shadow-lg p-8 text-center">
       <i class="fas fa-shopping-cart text-gray-400 text-5xl mb-4"></i>
-      <p class="text-xl text-gray-600">Seu carrinho está vazio</p>
-      <a href="/" class="mt-4 inline-block bg-[#FF6500] text-white py-2 px-4 rounded-md hover:bg-[#e65c00] transition-colors">
-        Continuar Comprando
+      <p class="text-xl text-gray-600 mb-4">Seu carrinho está vazio</p>
+      <a href="/" class="inline-block px-6 py-3 bg-[#FF6500] hover:bg-[#e65c00] text-white rounded-lg">
+        Começar a Comprar
       </a>
     </div>
   @endif
@@ -84,64 +94,76 @@
   </div>
 </div>
 
-@end
-
-@section('scripts')
 <script>
-function atualizarQuantidade(produtoId, quantidade) {
-  fetch('/carrinho/atualizar', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ produtoId, quantidade })
-  })
-  .then(response => response.json())
-  .then(data => {
-    if (data.error) {
-      showToast(data.error, 'error')
+async function updateQuantity(productId, newQuantity) {
+  try {
+    const response = await fetch('/carrinho/atualizar', {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        produtoId: productId,
+        quantidade: newQuantity
+      })
+    });
+
+    const data = await response.json();
+    
+    if (response.ok) {
+      location.reload(); // Recarrega a página para atualizar os valores
     } else {
-      location.reload()
+      showToast('❌ ' + data.error);
     }
-  })
-  .catch(error => {
-    console.error('Erro:', error)
-    showToast('Erro ao atualizar quantidade', 'error')
-  })
+  } catch (error) {
+    console.error('Erro ao atualizar quantidade:', error);
+    showToast('❌ Erro ao atualizar quantidade');
+  }
 }
 
-function removerItem(produtoId) {
-  fetch(`/carrinho/remover/${produtoId}`, {
-    method: 'DELETE'
-  })
-  .then(response => response.json())
-  .then(data => {
-    location.reload()
-  })
-  .catch(error => {
-    console.error('Erro:', error)
-    showToast('Erro ao remover item', 'error')
-  })
+async function removeFromCart(productId) {
+  try {
+    const response = await fetch(`/carrinho/${productId}`, {
+      method: 'DELETE'
+    });
+
+    const data = await response.json();
+    
+    if (response.ok) {
+      location.reload(); // Recarrega a página para atualizar os valores
+    } else {
+      showToast('❌ ' + data.error);
+    }
+  } catch (error) {
+    console.error('Erro ao remover item:', error);
+    showToast('❌ Erro ao remover item do carrinho');
+  }
 }
 
 function finalizarCompra() {
-  // Implementar a finalização da compra
-  alert('Funcionalidade em desenvolvimento')
+  // TODO: Implementar a finalização da compra
+  alert('Funcionalidade em desenvolvimento');
 }
 
-function showToast(message, type = 'success') {
-  const toast = document.getElementById('toast')
-  const toastMessage = document.getElementById('toastMessage')
+function showToast(message) {
+  const toast = document.getElementById('toast');
+  const toastMessage = document.getElementById('toastMessage');
   
-  toast.classList.remove('translate-y-full', 'opacity-0')
-  toast.classList.remove('bg-green-500', 'bg-red-500')
-  toast.classList.add(type === 'success' ? 'bg-green-500' : 'bg-red-500')
+  // Ajusta a cor do toast baseado no tipo de mensagem
+  if (message.startsWith('❌')) {
+    toast.classList.remove('bg-green-500');
+    toast.classList.add('bg-red-500');
+  } else {
+    toast.classList.remove('bg-red-500');
+    toast.classList.add('bg-green-500');
+  }
   
-  toastMessage.textContent = message
+  toastMessage.textContent = message;
+  toast.classList.remove('translate-y-full', 'opacity-0');
   
   setTimeout(() => {
-    toast.classList.add('translate-y-full', 'opacity-0')
-  }, 3000)
+    toast.classList.add('translate-y-full', 'opacity-0');
+  }, 3000);
 }
 </script>
-@end 
+@endsection 

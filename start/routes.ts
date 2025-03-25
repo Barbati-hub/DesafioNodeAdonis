@@ -6,9 +6,10 @@ import Cliente from 'App/Models/Cliente'
 import * as bcrypt from 'bcrypt'
 
 // Página inicial mostra os produtos
-Route.get('/', async ({ view }) => {
+Route.get('/', async ({ view, session }) => {
   const produtos = await Produto.all()
-  return view.render('home.index', { produtos })
+  const user = session.get('user')
+  return view.render('home.index', { produtos, auth: { user } })
 })
 
 // Rotas de autenticação
@@ -98,6 +99,14 @@ Route.group(() => {
     return view.render('home.index', { produtos })
   })
 }).middleware('googleAuth')
+
+// Rotas do Carrinho
+Route.group(() => {
+  Route.post('/carrinho/adicionar', 'CarrinhosController.adicionar').as('carrinho.adicionar')
+  Route.get('/carrinho', 'CarrinhosController.show').as('carrinho.show')
+  Route.delete('/carrinho/:id', 'CarrinhosController.remover').as('carrinho.remover')
+  Route.put('/carrinho/atualizar', 'CarrinhosController.atualizar').as('carrinho.atualizar')
+}).middleware('auth')
 
 // API para obter detalhes do produto em JSON
 Route.get('/api/produtos/:id', async ({ params, response }) => {
