@@ -1,5 +1,7 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column } from '@ioc:Adonis/Lucid/Orm'
+import { BaseModel, column, beforeSave } from '@ioc:Adonis/Lucid/Orm'
+import Hash from '@ioc:Adonis/Core/Hash'
+import * as bcrypt from 'bcrypt'
 
 export default class Cliente extends BaseModel {
   @column({ isPrimary: true })
@@ -7,6 +9,15 @@ export default class Cliente extends BaseModel {
 
   @column()
   public nome: string
+
+  @column()
+  public email: string
+
+  @column()
+  public cpf: string
+
+  @column({ serializeAs: null })
+  public senha: string
 
   @column()
   public whatsapp: string
@@ -46,5 +57,18 @@ export default class Cliente extends BaseModel {
   // Método para formatar o CEP antes de salvar
   public static formatCep(cep: string): string {
     return cep.replace(/\D/g, '')
+  }
+
+  // Método para formatar o CPF antes de salvar
+  public static formatCpf(cpf: string): string {
+    return cpf.replace(/\D/g, '')
+  }
+
+  @beforeSave()
+  public static async hashPassword(cliente: Cliente) {
+    if (cliente.$dirty.senha) {
+      // Usando bcrypt diretamente
+      cliente.senha = await bcrypt.hash(cliente.senha, 10)
+    }
   }
 } 

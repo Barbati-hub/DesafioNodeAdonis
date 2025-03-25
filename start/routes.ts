@@ -2,6 +2,8 @@ import Route from '@ioc:Adonis/Core/Route'
 import Hash from '@ioc:Adonis/Core/Hash'
 import User from 'App/Models/User'
 import Produto from 'App/Models/Produto'
+import Cliente from 'App/Models/Cliente'
+import * as bcrypt from 'bcrypt'
 
 // Página inicial mostra os produtos
 Route.get('/', async ({ view }) => {
@@ -18,9 +20,62 @@ Route.get('/login', async ({ view, session, response }) => {
   return view.render('welcome')
 })
 
+Route.post('/login', async ({ request, response, session }) => {
+  try {
+    const { email, senha } = request.only(['email', 'senha'])
+    console.log('Tentativa de login:', { email, senha })
+    
+    const cliente = await Cliente.query().where('email', email).first()
+    
+    if (!cliente) {
+      console.log('Cliente não encontrado')
+      session.flash('error', 'E-mail ou senha inválidos')
+      return response.redirect().back()
+    }
+
+    console.log('Cliente encontrado:', {
+      id: cliente.id,
+      email: cliente.email,
+      senha_hash: cliente.senha
+    })
+
+    // Usando bcrypt.compare diretamente
+    const senhaValida = await bcrypt.compare(senha, cliente.senha)
+    console.log('Resultado da verificação:', senhaValida)
+
+    if (!senhaValida) {
+      console.log('Senha inválida')
+      session.flash('error', 'E-mail ou senha inválidos')
+      return response.redirect().back()
+    }
+
+    // Se chegou aqui, o login foi bem sucedido
+    console.log('Login bem-sucedido')
+    session.put('user', {
+      id: cliente.id,
+      nome: cliente.nome,
+      email: cliente.email,
+      role: 'cliente'
+    })
+    
+    return response.redirect('/home')
+  } catch (error) {
+    console.error('Erro durante o login:', error)
+    session.flash('error', 'Ocorreu um erro durante o login')
+    return response.redirect().back()
+  }
+})
+
 // Rotas de registro de cliente
-Route.get('/register', 'ClientesController.create')
-Route.post('/register', 'ClientesController.store')
+Route.get('/register', 'ClientesController.create').as('clientes.create')
+Route.post('/register', 'ClientesController.store').as('clientes.store')
+
+// CRUD de Clientes
+Route.get('/clientes', 'ClientesController.index').as('clientes.index')
+Route.get('/clientes/:id', 'ClientesController.show').as('clientes.show')
+Route.get('/clientes/:id/editar', 'ClientesController.edit').as('clientes.edit')
+Route.put('/clientes/:id', 'ClientesController.update').as('clientes.update')
+Route.delete('/clientes/:id', 'ClientesController.destroy').as('clientes.destroy')
 
 Route.get('/auth/google', async ({ response }) => {
   return response.redirect().toPath('/auth/google/redirect')

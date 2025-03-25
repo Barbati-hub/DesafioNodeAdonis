@@ -3,8 +3,8 @@
 @section('content')
 <div class="container mx-auto px-4 py-8">
   <div class="flex justify-between items-center mb-6">
-    <h1 class="text-2xl font-bold text-gray-800">Clientes</h1>
-    <a href="{{ route('clientes.create') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg">
+    <h1 class="text-2xl font-bold text-gray-800">Lista de Clientes</h1>
+    <a href="{{ route('clientes.create') }}" class="px-4 py-2 bg-[#FF6500] text-white rounded-md hover:bg-[#e65c00]">
       Novo Cliente
     </a>
   </div>
@@ -25,11 +25,12 @@
     <table class="min-w-full divide-y divide-gray-200">
       <thead class="bg-gray-50">
         <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">WhatsApp</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cidade</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">WhatsApp</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cidade</th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
+          <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
@@ -39,35 +40,35 @@
               <div class="text-sm font-medium text-gray-900">{{ cliente.nome }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900">{{ cliente.whatsapp }}</div>
+              <div class="text-sm text-gray-500">{{ cliente.email }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900">{{ cliente.cidade || '-' }}</div>
+              <div class="text-sm text-gray-500">{{ cliente.whatsapp }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-sm text-gray-900">{{ cliente.estado || '-' }}</div>
+              <div class="text-sm text-gray-500">{{ cliente.cidade || '-' }}</div>
+            </td>
+            <td class="px-6 py-4 whitespace-nowrap">
+              <div class="text-sm text-gray-500">{{ cliente.estado || '-' }}</div>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-              <div class="flex justify-end space-x-2">
-                <a href="{{ route('clientes.show', { id: cliente.id }) }}" class="text-blue-600 hover:text-blue-900">
-                  <i class="fas fa-eye"></i>
-                </a>
-                <a href="{{ route('clientes.edit', { id: cliente.id }) }}" class="text-yellow-600 hover:text-yellow-900">
-                  <i class="fas fa-edit"></i>
-                </a>
-                <form action="{{ route('clientes.destroy', { id: cliente.id }) }}" method="POST" class="inline">
-                  @csrfField()
-                  @method('DELETE')
-                  <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Tem certeza que deseja excluir este cliente?')">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </form>
-              </div>
+              <a href="{{ route('clientes.show', [cliente.id]) }}" class="text-[#FF6500] hover:text-[#e65c00] mr-3">
+                Detalhes
+              </a>
+              <a href="{{ route('clientes.edit', [cliente.id]) }}" class="text-indigo-600 hover:text-indigo-900 mr-3">
+                Editar
+              </a>
+              <form action="{{ route('clientes.destroy', [cliente.id]) }}?_method=DELETE" method="POST" class="inline">
+                @csrf
+                <button type="submit" class="text-red-600 hover:text-red-900" onclick="return confirm('Tem certeza que deseja excluir este cliente?')">
+                  Excluir
+                </button>
+              </form>
             </td>
           </tr>
         @else
           <tr>
-            <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+            <td colspan="6" class="px-6 py-4 whitespace-nowrap text-center text-sm text-gray-500">
               Nenhum cliente cadastrado.
             </td>
           </tr>
@@ -76,4 +77,4 @@
     </table>
   </div>
 </div>
-@end 
+@endsection 

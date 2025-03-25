@@ -45,12 +45,22 @@
             </div>
 
             <form id="loginForm" class="space-y-6" action="/login" method="POST">
+                @csrf
                 <div>
-                    <input type="text" name="email" required class="input-field" placeholder="E-mail, CPF ou CNPJ">
+                    <input type="email" 
+                           name="email" 
+                           required 
+                           class="input-field" 
+                           placeholder="E-mail"
+                           value="{{ flashMessages.get('email') || '' }}">
                 </div>
 
                 <div class="relative">
-                    <input type="password" name="password" required class="input-field" placeholder="Senha">
+                    <input type="password" 
+                           name="senha" 
+                           required 
+                           class="input-field" 
+                           placeholder="Senha">
                     <button type="button" class="absolute right-3 top-3 text-gray-400" onclick="togglePassword()">
                         <i class="fas fa-eye"></i>
                     </button>
@@ -100,7 +110,7 @@
 
     <script>
         function togglePassword() {
-            const passwordInput = document.querySelector('input[name="password"]');
+            const passwordInput = document.querySelector('input[name="senha"]');
             const eyeIcon = document.querySelector('.fa-eye');
             
             if (passwordInput.type === 'password') {
