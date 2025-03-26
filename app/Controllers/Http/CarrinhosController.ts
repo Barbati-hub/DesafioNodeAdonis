@@ -3,7 +3,7 @@ import Produto from 'App/Models/Produto'
 
 export default class CarrinhosController {
   public async show({ view, session }: HttpContextContract) {
-    const carrinho = session.get('carrinho', [])
+    const carrinho = session.get('carrinho') || []
     const itens = []
     let total = 0
 
@@ -47,8 +47,8 @@ export default class CarrinhosController {
       return response.status(400).json({ error: 'Quantidade indisponível em estoque' })
     }
 
-    let carrinho = session.get('carrinho', [])
-    const itemIndex = carrinho.findIndex(item => item.produtoId === produtoId)
+    let carrinho = session.get('carrinho') || []
+    const itemIndex = carrinho.findIndex((item: { produtoId: number }) => item.produtoId === produtoId)
 
     if (itemIndex > -1) {
       carrinho[itemIndex].quantidade += quantidade
@@ -59,20 +59,20 @@ export default class CarrinhosController {
     session.put('carrinho', carrinho)
     return response.json({ 
       message: 'Produto adicionado ao carrinho',
-      quantidade: carrinho.reduce((total, item) => total + item.quantidade, 0)
+      quantidade: carrinho.reduce((total: number, item: { quantidade: number }) => total + item.quantidade, 0)
     })
   }
 
   public async remover({ request, response, session }: HttpContextContract) {
     const produtoId = request.param('id')
-    let carrinho = session.get('carrinho', [])
+    let carrinho = session.get('carrinho') || []
     
-    carrinho = carrinho.filter(item => item.produtoId !== produtoId)
+    carrinho = carrinho.filter((item: { produtoId: number }) => item.produtoId !== produtoId)
     session.put('carrinho', carrinho)
 
     return response.json({ 
       message: 'Produto removido do carrinho',
-      quantidade: carrinho.reduce((total, item) => total + item.quantidade, 0)
+      quantidade: carrinho.reduce((total: number, item: { quantidade: number }) => total + item.quantidade, 0)
     })
   }
 
@@ -89,8 +89,8 @@ export default class CarrinhosController {
       return response.status(400).json({ error: 'Quantidade indisponível em estoque' })
     }
 
-    let carrinho = session.get('carrinho', [])
-    const itemIndex = carrinho.findIndex(item => item.produtoId === produtoId)
+    let carrinho = session.get('carrinho') || []
+    const itemIndex = carrinho.findIndex((item: { produtoId: number }) => item.produtoId === produtoId)
 
     if (itemIndex > -1) {
       if (quantidade <= 0) {
@@ -103,7 +103,22 @@ export default class CarrinhosController {
     session.put('carrinho', carrinho)
     return response.json({ 
       message: 'Carrinho atualizado',
-      quantidade: carrinho.reduce((total, item) => total + item.quantidade, 0)
+      quantidade: carrinho.reduce((total: number, item: { quantidade: number }) => total + item.quantidade, 0)
     })
+  }
+
+  public async addToCart({ request, response, session }: HttpContextContract) {
+    const productId = request.input('productId')
+    console.log('Recebendo requisição para adicionar produto:', productId)
+
+    // Lógica para adicionar o produto ao carrinho
+    const cart = session.get('cart') || []
+    console.log('Estado atual do carrinho:', cart)
+
+    cart.push(productId)
+    session.put('cart', cart)
+    console.log('Produto adicionado ao carrinho. Novo estado do carrinho:', cart)
+
+    return response.json({ success: true, message: 'Produto adicionado ao carrinho' })
   }
 }

@@ -37,7 +37,11 @@
   
       // Abre o modal do carrinho (lado direito)
       const cartModal = document.getElementById('cartModal');
-      cartModal.classList.remove('translate-x-full');
+      if (cartModal) {
+        cartModal.classList.remove('translate-x-full');
+      } else {
+        console.error('Elemento cartModal não encontrado');
+      }
   
       // Faz uma requisição para buscar os detalhes do produto
       fetch(`/api/produtos/${produtoId}`)
@@ -79,11 +83,13 @@
     updateCartCount();
   
     function addToCart(produtoId) {
-        // Busca os detalhes do produto
         fetch(`/api/produtos/${produtoId}`)
             .then(response => response.json())
             .then(produto => {
-                // Verifica se o produto já está no carrinho
+                // Carregar o carrinho atual do localStorage
+                let cart = JSON.parse(localStorage.getItem('cart')) || [];
+                
+                // Verificar se o produto já existe no carrinho
                 const existingItem = cart.find(item => item.id === produto.id);
                 
                 if (existingItem) {
@@ -93,18 +99,28 @@
                         id: produto.id,
                         nome: produto.nome,
                         preco: produto.preco,
+                        descricao: produto.descricao,
+                        imagem_url: produto.imagem_url,
                         quantidade: 1
                     });
                 }
                 
-                // Salva no localStorage e atualiza a interface
-                saveCart();
+                // Salvar o carrinho atualizado no localStorage
+                localStorage.setItem('cart', JSON.stringify(cart));
+                
+                // Atualizar a UI
                 updateCartCount();
+                updateCartUI();
+                
+                // Mostrar mensagem de sucesso
+                showToast('Produto adicionado ao carrinho');
+                
+                // Abrir o modal do carrinho
                 openCart();
             })
             .catch(error => {
                 console.error('Erro ao adicionar ao carrinho:', error);
-                alert('Erro ao adicionar produto ao carrinho');
+                showToast('Erro ao adicionar produto ao carrinho', 'error');
             });
     }
   
@@ -129,8 +145,12 @@
     }
   
     function updateCartCount() {
-        const count = cart.reduce((total, item) => total + item.quantidade, 0);
-        document.getElementById('cartCount').textContent = count;
+        const cartCountElement = document.getElementById('cartCount');
+        if (cartCountElement) {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const count = cart.reduce((total, item) => total + item.quantidade, 0);
+            cartCountElement.textContent = count;
+        }
     }
   
     function updateCartUI() {
@@ -167,8 +187,13 @@
     }
   
     function openCart() {
-        document.getElementById('cartModal').classList.remove('hidden');
-        updateCartUI();
+        const cartModal = document.getElementById('cartModal');
+        if (cartModal) {
+            cartModal.classList.remove('hidden');
+            updateCartUI();
+        } else {
+            console.error('Elemento cartModal não encontrado');
+        }
     }
   
     function closeCart() {

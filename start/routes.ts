@@ -136,7 +136,7 @@ Route.post('/api/login', async ({ request, response, session }) => {
 })
 
 Route.post('/api/logout', async ({ session, response }) => {
-  session.clear()
+  session.forget('user')
   return response.ok({ message: 'Logout realizado com sucesso' })
 })
 
@@ -148,3 +148,7 @@ Route.group(() => {
   Route.put('/usuarios/:id', 'UsuariosController.update')
   Route.delete('/usuarios/:id', 'UsuariosController.destroy')
 }).prefix('/api')
+
+Route.post('/api/carrinho', 'CarrinhoController.addToCart')
+
+Route.get('/carrinho', 'CarrinhosController.show');

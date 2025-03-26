@@ -5,10 +5,12 @@
   <h1 class="text-2xl font-bold mb-6">Carrinho de Compras</h1>
 
   <div id="cartContainer" class="bg-white rounded-lg shadow-lg p-6">
+    <!-- Lista de Itens -->
     <div id="cartItems" class="divide-y divide-gray-200">
       <!-- Items will be dynamically inserted here -->
     </div>
 
+    <!-- Total e Checkout -->
     <div class="mt-8 border-t pt-8">
       <div class="flex justify-between items-center">
         <span class="text-xl font-medium">Total:</span>
@@ -22,28 +24,33 @@
   </div>
 </div>
 
+<!-- Toast de Notificação -->
 <div id="toast" class="fixed bottom-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg transform translate-y-full opacity-0 transition-all duration-300">
   <div class="flex items-center">
     <i class="fas fa-check-circle mr-2"></i>
     <span id="toastMessage"></span>
   </div>
 </div>
+
 @end
 
 @section('scripts')
 <script>
+// Garante que o código só executa depois que o DOM estiver carregado
 document.addEventListener('DOMContentLoaded', function() {
+    // Estado do carrinho
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
     console.log('Carrinho carregado:', cart);
 
+    // Função para atualizar a UI do carrinho
     function updateCartUI() {
+        console.log('Atualizando UI com carrinho:', cart);
+        const cartContainer = document.getElementById('cartContainer');
         const cartItems = document.getElementById('cartItems');
         const cartTotal = document.getElementById('cartTotal');
-        cartItems.innerHTML = '';
-        let total = 0;
 
-        if (cart.length === 0) {
-            cartItems.innerHTML = `
+        if (!cart || cart.length === 0) {
+            cartContainer.innerHTML = `
                 <div class="text-center py-8">
                     <i class="fas fa-shopping-cart text-gray-400 text-5xl mb-4"></i>
                     <p class="text-xl text-gray-600">Seu carrinho está vazio</p>
@@ -54,6 +61,9 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             return;
         }
+
+        cartItems.innerHTML = '';
+        let total = 0;
 
         cart.forEach(item => {
             const itemTotal = parseFloat(item.preco) * item.quantidade;
@@ -99,10 +109,14 @@ document.addEventListener('DOMContentLoaded', function() {
             cartItems.appendChild(itemElement);
         });
 
-        cartTotal.textContent = `R$ ${total.toFixed(2)}`;
+        if (cartTotal) {
+            cartTotal.textContent = `R$ ${total.toFixed(2)}`;
+        }
     }
 
+    // Função para atualizar quantidade
     function atualizarQuantidade(produtoId, novaQuantidade) {
+        console.log('Atualizando quantidade:', produtoId, novaQuantidade);
         if (novaQuantidade < 1) {
             removerItem(produtoId);
             return;
@@ -117,21 +131,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Função para remover item
     function removerItem(produtoId) {
+        console.log('Removendo item:', produtoId);
         cart = cart.filter(item => item.id !== produtoId);
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartUI();
         showToast('Item removido do carrinho');
     }
 
+    // Função para finalizar compra
     function finalizarCompra() {
-        if (cart.length === 0) {
+        if (!cart || cart.length === 0) {
             showToast('Seu carrinho está vazio', 'error');
             return;
         }
+        // Implementar a finalização da compra
         alert('Funcionalidade em desenvolvimento');
     }
 
+    // Função para mostrar toast
     function showToast(message, type = 'success') {
         const toast = document.getElementById('toast');
         const toastMessage = document.getElementById('toastMessage');
@@ -147,6 +166,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 3000);
     }
 
+    // Event Listeners
     document.getElementById('cartItems').addEventListener('click', function(e) {
         const button = e.target.closest('button');
         if (!button) return;
@@ -177,6 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('finalizarCompraBtn').addEventListener('click', finalizarCompra);
 
+    // Inicializar a UI do carrinho
     updateCartUI();
 });
 </script>

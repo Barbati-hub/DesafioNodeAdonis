@@ -84,20 +84,17 @@ Loja Virtual - Produtos
   </div>
 </div>
 
-<script>
-// Carrinho de Compras
-let cartCount = 0;
+<div id="cartItems"></div>
 
-function addToCart(productId) {
-  cartCount++;
-  updateCartCount();
-  showToast('Produto adicionado ao carrinho!');
-}
+<script>
+// Certifique-se de que a variável `cart` é declarada apenas uma vez
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let cartCount = 0;
 
 function updateCartCount() {
   const cartCountElement = document.getElementById('cartCount');
   if (cartCountElement) {
-    cartCountElement.textContent = cartCount;
+    cartCountElement.textContent = cart.reduce((total, item) => total + item.quantidade, 0);
     cartCountElement.classList.remove('hidden');
   }
 }
@@ -124,6 +121,86 @@ function showProductDetails(productId) {
     })
     .catch(error => console.error('Erro ao carregar detalhes do produto:', error));
 }
+
+function addToCart(produtoId) {
+    console.log('Produto ID:', produtoId);
+    fetch(`/api/produtos/${produtoId}`)
+        .then(response => response.json())
+        .then(produto => {
+            console.log('Produto:', produto);
+            const existingItem = cart.find(item => item.id === produto.id);
+            if (existingItem) {
+                existingItem.quantidade += 1;
+            } else {
+                cart.push({
+                    id: produto.id,
+                    nome: produto.nome,
+                    preco: produto.preco,
+                    quantidade: 1
+                });
+            }
+            console.log('Carrinho:', cart);
+            saveCart();
+            updateCartCount();
+            openCart();
+
+            // Enviar ordem ao servidor
+            fetch('/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ produtoId: produto.id, quantidade: 1 })
+            })
+            .then(response => response.json())
+            .then(order => {
+                console.log('Ordem criada:', order);
+            })
+            .catch(error => {
+                console.error('Erro ao criar ordem:', error);
+            });
+        })
+        .catch(error => {
+            console.error('Erro ao adicionar ao carrinho:', error);
+            alert('Erro ao adicionar produto ao carrinho');
+        });
+}
+
+function saveCart() {
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+function loadCart() {
+    cart = JSON.parse(localStorage.getItem('cart')) || [];
+}
+
+function openCart() {
+    const cartModal = document.getElementById('cartModal');
+    if (cartModal) {
+        cartModal.classList.remove('hidden');
+        updateCartUI();
+    } else {
+        console.error('Elemento cartModal não encontrado');
+    }
+}
+
+function updateCartUI() {
+    const cartItemsElement = document.getElementById('cartItems');
+    if (cartItemsElement) {
+        cartItemsElement.innerHTML = '';
+        cart.forEach(item => {
+            const itemElement = document.createElement('div');
+            itemElement.textContent = `${item.nome} - ${item.quantidade}`;
+            cartItemsElement.appendChild(itemElement);
+        });
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadCart();
+    updateCartCount();
+    updateCartUI();
+});
 </script>
 @end
 
