@@ -1,6 +1,5 @@
 import { DateTime } from 'luxon'
 import { BaseModel, column, beforeSave } from '@ioc:Adonis/Lucid/Orm'
-import Hash from '@ioc:Adonis/Core/Hash'
 import * as bcrypt from 'bcrypt'
 
 export default class Cliente extends BaseModel {

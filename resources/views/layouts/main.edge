@@ -3,14 +3,62 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<<<<<<< HEAD
   <title>Desafio Node </title>
+=======
+  <title>Desafio Node - @!section('title')</title>
+
+  <!-- CSRF Token -->
+  {{ csrfField() }}
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+>>>>>>> 180821922ce7097b70415e4ed765cb57292a3222
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <style>
     .header-top {
       background-color: #FF6500;
     }
   </style>
+
+  <!-- Scripts -->
+  <script>
+    // Configuração global para requisições AJAX
+    document.addEventListener('DOMContentLoaded', function() {
+      // Log inicial
+      console.log('--------- 1 - Início do carregamento da página --------');
+      
+      // Pegar o token CSRF
+      const csrfToken = document.querySelector('input[name="_csrf"]')?.value;
+      console.log('--------- 2 - Token CSRF encontrado --------', csrfToken);
+      
+      if (!csrfToken) {
+        console.error('Token CSRF não encontrado!');
+        return;
+      }
+
+      // Interceptar todas as requisições fetch
+      const originalFetch = window.fetch;
+      window.fetch = function() {
+        let [resource, config] = arguments;
+        config = config || {};
+        config.headers = config.headers || {};
+        
+        // Adicionar token CSRF para requisições não GET
+        if (config.method && config.method !== 'GET') {
+          config.headers['X-XSRF-TOKEN'] = csrfToken;
+          console.log('Token CSRF adicionado à requisição:', config.headers['X-XSRF-TOKEN']);
+        }
+        
+        // Sempre incluir credentials
+        config.credentials = 'include';
+        
+        return originalFetch(resource, config);
+      };
+    });
+  </script>
+
+  @!section('styles')
 </head>
 <body class="min-h-screen flex flex-col">
   <!-- Header -->
